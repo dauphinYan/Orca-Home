@@ -19,3 +19,13 @@ draft: true
 3. 删除 `draft: true` 或改为 `draft: false`。
 
 执行 `npm run dev` 或 `npm run build` 后，Astro 会自动生成 `/blog/my-first-post/` 页面。
+
+## Mermaid 图表
+
+使用标记为 `mermaid` 的代码块，文章页会自动将其渲染为图表：
+
+```mermaid
+flowchart LR
+    A[开始] --> B[编写文章]
+    B --> C[发布]
+```

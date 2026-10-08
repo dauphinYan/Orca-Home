@@ -6,6 +6,10 @@ export default defineConfig({
   site,
   base: process.env.BASE_PATH ?? '/',
   markdown: {
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['mermaid', 'math'],
+    },
     shikiConfig: {
       themes: {
         light: 'github-light',

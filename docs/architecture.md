@@ -22,6 +22,10 @@ The blog detail template builds its table of contents from rendered `h2` through
 
 Create an article by copying `src/content/blog/TEMPLATE.md`, renaming it to an English hyphenated slug, filling out the frontmatter, then removing `draft: true`. This keeps unpublished templates out of both the homepage and generated routes.
 
+## Article Diagrams
+
+The shared `ArticleDetailLayout.astro` supports fenced `mermaid` blocks in both blog articles and official documentation pages. `astro.config.mjs` excludes these blocks from Shiki so their original text remains available to the browser. `src/scripts/article-mermaid.ts` dynamically imports Mermaid only on pages containing diagrams, renders each block independently, and redraws diagrams when the system color scheme changes. Invalid diagrams retain their source and show a syntax-error message; other diagrams continue rendering. Diagram styles live in `src/styles/article-detail.css` and keep overflow inside the diagram container. The blog publishing template includes a small flowchart example.
+
 ## Site Icon
 
 `public/favicon.svg` supplies the shared site icon for the homepage, blog detail pages, and project pages. Each page references the same root-relative icon URL, keeping browser tabs visually consistent.
