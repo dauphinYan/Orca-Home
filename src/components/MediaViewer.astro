@@ -1,0 +1,22 @@
+---
+import '../styles/media-viewer.css';
+---
+<dialog class="media-viewer" aria-label="图片与图表查看器" data-media-viewer>
+  <div class="media-viewer-toolbar">
+    <span data-viewer-title>放大查看</span>
+    <div class="media-viewer-actions">
+      <button type="button" data-viewer-action="out" aria-label="缩小">−</button>
+      <output data-viewer-scale aria-live="polite">100%</output>
+      <button type="button" data-viewer-action="in" aria-label="放大">+</button>
+      <button type="button" data-viewer-action="fit">适应窗口</button>
+      <button type="button" data-viewer-action="close" aria-label="关闭查看器">×</button>
+    </div>
+  </div>
+  <div class="media-viewer-stage" data-viewer-stage><div class="media-viewer-content" data-viewer-content></div></div>
+  <p class="media-viewer-help">滚轮缩放 · 拖动查看 · 双击重置 · Esc 关闭</p>
+</dialog>
+<script>
+  import { initMediaViewer } from '../scripts/media-viewer';
+
+  initMediaViewer();
+</script>

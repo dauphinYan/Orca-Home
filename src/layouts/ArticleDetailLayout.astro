@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/article-sidebar.css';
 import '../styles/article-frame.css';
 import '../styles/article-detail.css';
+import MediaViewer from '../components/MediaViewer.astro';
 
 interface Props {
   pageTitle: string;
@@ -50,6 +51,7 @@ const {
     </main>
     <button class="back-to-top" type="button" aria-label="回到页面顶部" data-back-to-top hidden>TOP ↑</button>
     <footer class="blog-footer"><span>{footerNote}</span><span>{footerCopyright}</span></footer>
+    <MediaViewer />
     <script>
       import { initArticleReader } from '../scripts/article-reader';
       import { initArticleMermaid } from '../scripts/article-mermaid';

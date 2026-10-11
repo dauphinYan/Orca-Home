@@ -1,0 +1,18 @@
+[data-media-preview] { cursor: zoom-in; }
+[data-media-preview]:focus-visible { outline: 3px solid var(--pink, #ec7898); outline-offset: 5px; }
+.media-viewer { background: var(--code-bg, #171a16); border: 1px solid var(--line, #777); color: var(--ink, #eee7dc); width: calc(100vw - 32px); max-width: 1600px; height: 90svh; max-height: calc(100svh - 32px); padding: 0; overflow: hidden; }
+.media-viewer::backdrop { background: #000c; backdrop-filter: blur(6px); }
+.media-viewer[open] { display: flex; flex-direction: column; }
+.media-viewer-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line, #777); }
+.media-viewer-toolbar > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; font-size: 14px; }
+.media-viewer-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.media-viewer-actions button { background: transparent; border: 1px solid var(--line, #777); color: inherit; border-radius: 4px; cursor: pointer; min-width: 40px; min-height: 40px; padding: 6px 10px; font: inherit; }
+.media-viewer-actions button:hover { background: var(--pink, #825329); }
+.media-viewer-actions output { min-width: 52px; text-align: center; font-size: 13px; }
+.media-viewer-stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: grab; touch-action: none; user-select: none; }
+.media-viewer-stage.is-dragging { cursor: grabbing; }
+.media-viewer-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transform-origin: center; }
+.media-viewer-content > img, .media-viewer-content > svg { display: block; width: auto; height: auto; max-width: calc(100% - 32px); max-height: calc(100% - 32px); object-fit: contain; flex-shrink: 0; }
+.media-viewer-content > svg { width: calc(100% - 32px); height: calc(100% - 32px); }
+.media-viewer-help { margin: 0; padding: 8px 12px; text-align: center; font-size: 12px; opacity: .7; }
+@media (max-width: 600px) { .media-viewer { width: calc(100vw - 16px); max-height: calc(100svh - 16px); height: 94svh; } .media-viewer-toolbar { flex-wrap: wrap; padding: 8px; } .media-viewer-toolbar > span { width: 100%; } .media-viewer-actions { width: 100%; justify-content: flex-end; } }

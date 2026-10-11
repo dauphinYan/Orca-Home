@@ -1,5 +1,6 @@
 ---
 import '../../styles/lockknock.css';
+import MediaViewer from '../../components/MediaViewer.astro';
 import { projects } from '../../data/portfolio';
 import cover from '../../assets/projects/lock-knock/cover-horizontal.jpg?url';
 import poster from '../../assets/projects/lock-knock/cover-vertical.png?url';
@@ -51,17 +52,8 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
       <section class="game-follow"><p class="eyebrow">THE JOURNEY CONTINUES</p><h2>在微光中，继续前行。</h2><p>关注 GrewGame，了解更多游戏与开发内容。</p><div class="follow-actions"><a class="gold-button" href={promotionalVideo} target="_blank" rel="noopener noreferrer">前往 Bilibili ↗</a></div></section>
     </main>
     <footer class="game-footer"><span>本网站基于 Astro 构建</span><span>© 2026 Orca丶. 保留所有权利。</span></footer>
-    <dialog class="lightbox" aria-label="游戏截图大图"><button class="lightbox-close" aria-label="关闭大图">×</button><img alt="" /></dialog>
+    <MediaViewer />
     <script>
-      const lightbox = document.querySelector<HTMLDialogElement>('.lightbox')!;
-      const image = lightbox.querySelector('img')!;
-      document.querySelectorAll<HTMLButtonElement>('[data-image]').forEach(button => {
-        button.addEventListener('click', () => {
-          image.src = button.dataset.image!;
-          image.alt = button.querySelector('img')!.alt;
-          lightbox.showModal();
-        });
-      });
       const galleryTrack = document.querySelector<HTMLElement>('.gallery-track')!;
       document.querySelectorAll<HTMLButtonElement>('[data-gallery-direction]').forEach(button => {
         button.addEventListener('click', () => {
@@ -69,12 +61,6 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
           const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           galleryTrack.scrollBy({ left: direction * galleryTrack.clientWidth * 0.85, behavior: reducedMotion ? 'auto' : 'smooth' });
         });
-      });
-      lightbox.querySelector('button')!.addEventListener('click', () => lightbox.close());
-      lightbox.addEventListener('click', event => {
-        if (event.target !== lightbox) return;
-        const bounds = lightbox.getBoundingClientRect();
-        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) lightbox.close();
       });
     </script>
   </body>

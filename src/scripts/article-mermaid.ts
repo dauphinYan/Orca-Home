@@ -1,4 +1,5 @@
 import type { Mermaid } from 'mermaid';
+import { enableMediaPreview } from './media-viewer';
 
 /** Loads Mermaid only when the article contains diagram fences. */
 export async function initArticleMermaid() {
@@ -59,6 +60,7 @@ export async function initArticleMermaid() {
         const { svg, bindFunctions } = await mermaid.render(`article-mermaid-${renderVersion}-${index}`, diagram.definition);
         diagram.canvas.innerHTML = svg;
         bindFunctions?.(diagram.canvas);
+        enableMediaPreview(diagram.canvas, `Mermaid 图表 ${index + 1}`);
         diagram.source.hidden = true;
         diagram.message.hidden = true;
       } catch (error) {
