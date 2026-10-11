@@ -18,7 +18,17 @@ draft: true
 2. 修改 frontmatter 中的标题、摘要、日期和标签。
 3. 删除 `draft: true` 或改为 `draft: false`。
 
-执行 `npm run dev` 或 `npm run build` 后，Astro 会自动生成 `/blog/my-first-post/` 页面。
+执行 `npm run dev` 或 `npm run build` 后，Astro 会自动生成 `/article/blog/my-first-post/` 页面。
+
+## 插入截图
+
+在 Typora 中将图片复制到文章旁的 `./my-first-post.assets` 目录，使用相对路径，并随文章一起提交。写法示例：
+
+```md
+![编辑器截图](./my-first-post.assets/screenshot.png)
+```
+
+网站会自动生成不超过约 100KB 的 WebP 图片，保留原图。请勿使用电脑绝对路径。完整标准见 `docs/blog-images.md`。
 
 ## Mermaid 图表
 

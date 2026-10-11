@@ -1,11 +1,17 @@
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
+import { blogImageDelivery, remarkBlogImages } from './scripts/blog-images.mjs';
 
 const site = process.env.SITE_URL ?? 'https://dolphindream.cn';
 
+const base = process.env.BASE_PATH ?? '/';
+
 export default defineConfig({
   site,
-  base: process.env.BASE_PATH ?? '/',
+  base,
+  integrations: [blogImageDelivery()],
   markdown: {
+    processor: unified({ remarkPlugins: [[remarkBlogImages, { base }]] }),
     syntaxHighlight: {
       type: 'shiki',
       excludeLangs: ['mermaid', 'math'],

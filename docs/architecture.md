@@ -38,6 +38,8 @@ The shared `ArticleDetailLayout.astro` supports fenced `mermaid` blocks in both 
 
 ## Image Delivery
 
+Blog Markdown relative images are handled by `scripts/blog-images.mjs`, registered as a remark plugin and an Astro build integration. Original files remain beside the article for Typora; rendered URLs point to hashed static WebP files under `/_blog-images/`. Screenshots are limited to 100KiB with a 1600px initial width and a 640px resize floor. The integration copies generated images into the final build after rendering. See `docs/blog-images.md` for the authoring workflow and scope.
+
 The home hero uses the cropped `public/hero-art.webp`, preloaded from `index.astro` because it is an above-the-fold CSS background. Legacy project-art styles use individual cropped WebP files rather than the full reference composition. `public/reference.png` remains a design source and is not requested by the home page.
 
 Images imported by page and data modules live in `src/assets`. Project assets use `src/assets/projects/<project-slug>/`; profile and skill images use `src/assets/profile/` and `src/assets/icons/`. Asset directories and filenames use lowercase kebab-case. Legacy images are imported with Vite's `?url` query so they are bundled without Astro image metadata processing; this is required because several sources lack decodable metadata. `projects/conan/` and `projects/seer-plan/` are retained as source material for future project pages and are not currently imported.
