@@ -1,6 +1,7 @@
 /** Shared reader enhancements for long-form articles outside the legacy blog route. */
 export function initArticleReader() {
   initArticleSidebarToggles();
+  initArticleFooterClearance();
 
   const backToTop = document.querySelector('[data-back-to-top]');
   if (backToTop instanceof HTMLButtonElement) {
@@ -128,6 +129,28 @@ export function initArticleReader() {
     revealActivePath(active.target);
   }, { rootMargin: '-15% 0px -70%' });
   headings.forEach(heading => observer.observe(heading));
+}
+
+/** Keeps bottom floating controls above the footer's top border. */
+function initArticleFooterClearance() {
+  const footer = document.querySelector<HTMLElement>('.blog-footer');
+
+  if (!footer) return;
+
+  const update = () => {
+    const clearance = Math.max(0, window.innerHeight - footer.getBoundingClientRect().top);
+
+    document.body.style.setProperty('--article-footer-clearance', `${clearance}px`);
+  };
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+
+  const observer = new ResizeObserver(update);
+
+  observer.observe(document.body);
+  observer.observe(footer);
 }
 
 /** Adds the shared mobile drawer behavior to every article navigation sidebar. */
