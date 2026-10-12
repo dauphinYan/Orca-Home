@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { blogImageDelivery, remarkBlogImages } from './scripts/blog-images.mjs';
 
 const site = process.env.SITE_URL ?? 'https://dolphindream.cn';
@@ -11,7 +13,10 @@ export default defineConfig({
   base,
   integrations: [blogImageDelivery()],
   markdown: {
-    processor: unified({ remarkPlugins: [[remarkBlogImages, { base }]] }),
+    processor: unified({
+      remarkPlugins: [[remarkBlogImages, { base }], remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
     syntaxHighlight: {
       type: 'shiki',
       excludeLangs: ['mermaid', 'math'],

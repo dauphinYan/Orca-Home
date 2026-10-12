@@ -138,7 +138,24 @@ function initArticleFooterClearance() {
   if (!footer) return;
 
   const update = () => {
-    const clearance = Math.max(0, window.innerHeight - footer.getBoundingClientRect().top);
+    const viewport = window.visualViewport;
+
+    const viewportHeight = viewport?.height ?? window.innerHeight;
+
+    const viewportBottom = (viewport?.offsetTop ?? 0) + viewportHeight;
+
+    const footerBounds = footer.getBoundingClientRect();
+
+    const actions = document.querySelector<HTMLElement>('[data-article-mobile-actions]');
+
+    const actionsHeight = actions?.getBoundingClientRect().height ?? 0;
+
+    // Limit footer avoidance to its height and keep the controls inside the visible viewport.
+    const maxLift = Math.max(0, viewportHeight - actionsHeight - 36);
+
+    const footerLift = Math.min(Math.max(0, viewportBottom - footerBounds.top), footerBounds.height, maxLift);
+
+    const clearance = Math.max(0, window.innerHeight - viewportBottom) + footerLift;
 
     document.body.style.setProperty('--article-footer-clearance', `${clearance}px`);
   };
@@ -146,6 +163,8 @@ function initArticleFooterClearance() {
   update();
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
+  window.visualViewport?.addEventListener('scroll', update, { passive: true });
+  window.visualViewport?.addEventListener('resize', update);
 
   const observer = new ResizeObserver(update);
 
