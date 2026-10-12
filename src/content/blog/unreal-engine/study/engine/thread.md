@@ -85,13 +85,25 @@ GPU：执行图形工作
 
 因此为了解决这个问题，最好的方式是复制一份数据快照给另一个县城。 
 
-## 3. TaskGraph 与 UE::Tasks
+## 3. 常用 API 使用
+
+| API                             | 典型使用场景             | 具体例子                                             |
+| ------------------------------- | ------------------------ | ---------------------------------------------------- |
+| `UE::Tasks::Launch`             | 独立计算、任务依赖       | 后台计算大量敌人的威胁评分，再根据结果计算目标优先级 |
+| `AsyncTask(GameThread, ...)`    | 切换到游戏线程           | 后台完成寻路数据计算后，回到游戏线程修改 Actor 状态  |
+| `AsyncTask(AnyThread, ...)`     | 简单后台任务             | 后台统计一批纯 C++ 战斗日志数据，不需要返回值        |
+| `Async(ThreadPool, ...)`        | 后台计算并取得结果       | 后台计算装备属性评分，通过 `TFuture` 获取结果        |
+| `ParallelFor`                   | 大量独立、相似的计算     | 同时计算 1000 个敌人到玩家的距离平方                 |
+| `FRunnable` + `FRunnableThread` | 长时间持续运行的专用线程 | 建立一个持续接收外部 TCP 数据的网络监听线程          |
+| 引擎专用异步 API                | 引擎系统提供的异步操作   | 通过 `FStreamableManager` 异步加载角色模型和动画资源 |
+
+### TaskGraph 与 UE::Tasks
 
 [Epic 官方文档](https://dev.epicgames.com/documentation/unreal-engine/tasks-systems-in-unreal-engine?lang=en-US)明确将 `UE::Tasks`（Tasks System）定位为对传统 `TaskGraph` 的改进。两者在默认新后端下共享底层 LowLevelTasks 调度设施。
 
 **任务系统**是一个作业管理器，能够异步执行你的游戏代码。它支持构建和运行依赖任务的有向无环图。
 
-### Worker 怎样找到工作
+#### Worker 怎样找到工作
 
 调度器会维护队列， Worker 会在空闲的时候从其他队列里面去寻找是否有可执行的任务，这样就可以避免出现空闲的情况，充分利用资源。 
 
@@ -102,7 +114,7 @@ while(
    TryExecuteTaskFrom<FSchedulerTls::FLocalQueueType, &FSchedulerTls::FLocalQueueType::DequeueSteal, false>(WorkerEvent, WorkerLocalQueue, OutOfWork, bPermitBackgroundWork))
 ```
 
-### 依赖示例
+#### 依赖示例
 
 ```CPP
 #include "Tasks/Task.h"
@@ -128,3 +140,754 @@ auto CombinedTask = UE::Tasks::Launch(
 
 A、B 可以独立执行，`UE::Tasks::Prerequisites(TaskA, TaskB)` 表示 CombinedTask 在两者完成后才具备执行条件。
 
+### AsyncTask(ENamedThreads::GameThread, ...)
+
+由后台进程将工作放入游戏线程的任务队列中，等待进程调度的执行。 但这种方式不等同于直接调用游戏进程上的函数，而是把函数交给游戏进程执行。 
+
+```
+Worker Thread
+    |
+    | AsyncTask(GameThread, Lambda)
+    v
+任务提交给 GameThread 对应的队列
+    |
+    v
+Game Thread 处理队列
+    |
+    v
+执行 Lambda
+```
+
+### AsyncTask(ENamedThreads::AnyThread, ...)
+
+将任务提交给 TaskGraph 调度器，不指定具体的执行线程。
+
+```cpp
+void AsyncTask(ENamedThreads::Type Thread, TUniqueFunction<void()> Function)
+{
+	TGraphTask<FAsyncGraphTask>::CreateTask().ConstructAndDispatchWhenReady(Thread, MoveTemp(Function));
+}
+```
+
+```
+Game Thread
+    |
+    | AsyncTask(AnyThread, ...)
+    v
+TaskGraph 调度器
+    |
+    +------ Worker A
+    |
+    +------ Worker B  <-- 执行任务
+    |
+    +------ Worker C
+```
+
+### Async(EAsyncExecution::ThreadPool, ...)
+
+将工作放入线程池的等待队列，由空闲线程取出执行，并通过 Future 保存结果。
+
+```cpp
+TFuture<int32> Future = Async(
+    EAsyncExecution::ThreadPool,
+    []()
+    {
+        return 10 + 20;
+    }
+);
+
+// 如果任务尚未完成，这里可能阻塞
+int32 Result = Future.Get();
+```
+
+```
+Game Thread
+    |
+    | Async(ThreadPool, Lambda)
+    v
+全局线程池的任务队列
+    |
+    +--> Worker 1 [正在执行其他任务]
+    |
+    +--> Worker 2 [空闲]
+    |         |
+    |         v
+    |      执行 Lambda
+    |         |
+    |         v
+    |      写入计算结果
+    |
+    v
+Future 关联共享结果状态
+    |
+    v
+调用 Get() 获取结果
+```
+
+### ParallelFor
+
+数据并行。把循环的多个迭代分配给不同 Worker，同时执行，最后等待全部完成。
+
+```cpp
+TArray<float> Results;
+Results.SetNum(1000);
+
+ParallelFor(1000, [&Results](int32 Index)
+{
+    Results[Index] = FMath::Sqrt(static_cast<float>(Index));
+});
+
+// 这里所有循环迭代都已完成
+```
+
+`ParallelFor` 通常属于同步并行，调用它的线程通常要等全部计算完成才能继续。
+
+### FRunnable + FRunnableThread
+
+创建一个真实的操作系统线程，在这个线程上持续运行开发者指定的工作。
+
+
+
+### 引擎专用异步 API
+
+开发者提交操作请求，具体的任务拆分、线程调度、同步与结果交付交给引擎系统处理。
+
+最常见的资产加载：
+
+```cpp
+FStreamableManager& Manager =
+    UAssetManager::GetStreamableManager();
+
+Manager.RequestAsyncLoad(
+    AssetPath,
+    FStreamableDelegate::CreateLambda([]()
+    {
+        // 资源加载完成后的处理
+    })
+);
+```
+
+异步加载并不等于把同步加载函数放到 Worker Thread 中执行
+
+## 4. 常见问题
+
+### 共享数据竞争
+
+假设 `Count = 0`，两个线程执行普通整数的 `Count++`：
+
+```
+线程 A：读 0 → 算 1 ───────→ 写 1
+线程 B：     读 0 → 算 1 → 写 1
+```
+
+同样的，对于容器来讲，它除了存放元素，还会存放缓冲区地址、元素数量、容量等信息。如果两个线程同时访问进行修改，如果产生扩容，甚至还可能导致旧指针失效。 
+
+因允许读取或修改的情况如下：
+
+- 多线程读取不再修改，且容器的生命周期覆盖整个读取的过程。 
+- 一个线程读，另一个线程改，需要使用同步或者快照的方式。 
+- 使用同一份数组，但不同线程使用的元素互不重叠。 
+
+### 线程安全智能指针
+
+`TSharedPtr<FData, ESPMode::ThreadSafe>` 线程安全指针，它主要负责的是解决多线程环境下对象生命周期的管理问题。
+
+```cpp 
+TSharedPtr<FData, ESPMode::ThreadSafe> Data =
+    MakeShared<FData, ESPMode::ThreadSafe>();
+
+UE::Tasks::Launch(TEXT("Calculate"), [Data]()
+{
+    // 工作线程持有 Data 的共享所有权
+    ProcessData(Data.Get());
+});
+
+// 游戏线程
+Data.Reset();
+```
+
+例如在当前这个例子，它不会保护 Data 的内容，但是它可以保证在线程使用完毕之前，这个对象不会被释放。
+
+## 5. 同步工具
+
+### 互斥锁
+
+```cpp
+#include "HAL/CriticalSection.h"
+#include "Misc/ScopeLock.h"
+
+class FSharedCounter
+{
+public:
+    // 安全累加共享计数。
+    void Increment()
+    {
+        FScopeLock Lock(&Mutex);
+
+        ++Count;
+    }
+
+    // 返回加锁读取的计数快照。
+    int32 GetCount()
+    {
+        FScopeLock Lock(&Mutex);
+
+        return Count;
+    }
+
+private:
+    FCriticalSection Mutex;
+
+    int32 Count = 0;
+};
+```
+
+`FScopeLock` 构造时 `Lock`，离开作用域时 `Unlock`，利用 RAII 防止某个 return 路径忘记解锁。
+
+```cpp
+class FScopeLock
+{
+public:
+
+	/**
+	 * Constructor that performs a lock on the synchronization object
+	 *
+	 * @param InSynchObject The synchronization object to manage
+	 */
+	UE_NODISCARD_CTOR FScopeLock( FCriticalSection* InSynchObject )
+		: SynchObject(InSynchObject)
+	{
+		check(SynchObject);
+		SynchObject->Lock();
+	}
+
+	/** Destructor that performs a release on the synchronization object. */
+	~FScopeLock()
+	{
+		Unlock();
+	}
+
+	void Unlock()
+	{
+		if(SynchObject)
+		{
+			SynchObject->Unlock();
+			SynchObject = nullptr;
+		}
+	}
+
+private:
+
+	/** Default constructor (hidden on purpose). */
+	FScopeLock();
+
+	/** Copy constructor( hidden on purpose). */
+	FScopeLock(const FScopeLock& InScopeLock);
+
+	/** Assignment operator (hidden on purpose). */
+	FScopeLock& operator=( FScopeLock& InScopeLock )
+	{
+		return *this;
+	}
+
+private:
+
+	// Holds the synchronization object to aggregate and scope manage.
+	FCriticalSection* SynchObject;
+};
+```
+
+### 原子操作
+
+```cpp
+#include <atomic>
+
+std::atomic<int32> CompletedCount{0};
+
+CompletedCount.fetch_add(1, std::memory_order_relaxed);
+```
+
+当两个线程同时对同一个原子变量执行 `fetch_add(1)` 时，CPU 提供的原子机制会保证这两次读-改-写操作不会互相覆盖。从外部观察，其效果等价于某个线程先完成加法，另一个线程再基于更新后的值进行加法。
+
+需要注意的是原子变量不能保证业务安全，图中例子是两次独立的原子操作。 
+
+```cpp
+if (Stock.load() > 0)
+{
+    Stock.fetch_sub(1);
+    // 购买成功
+}
+```
+
+实际情况可能在条件判断阶段是满足的，其中某一个线程它先执行了购买，这样另一个线程它在执行到购买的时候很有可能会出现库存为零的情况，但仍然执行了购买。 
+
+解决方式可以有加锁或者使用 compare and swap：
+
+```cpp
+std::atomic<int32> Stock{1};
+
+bool TryBuy()
+{
+    int32 Expected = Stock.load();
+
+    while (Expected > 0)
+    {
+        if (Stock.compare_exchange_weak(
+                Expected,
+                Expected - 1))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+```
+
+## 6. 推荐的数据流
+
+游戏线程取快照，后台计算，游戏线程提交：
+
+```
+Game Thread
+  读取当前业务数据，复制为普通数据
+  创建请求版本号和弱对象引用
+          ↓ 移交快照
+Worker
+  只读取自己的快照，生成结果
+          ↓ 将结果提交给 Game Thread
+Game Thread
+  检查对象有效、业务仍活跃、版本匹配
+  应用结果，按业务需要通知 UI
+```
+
+通过读取快照可以解决以下问题：
+
+1. **并发访问**：后台不读取正在变化的 Actor 数据。
+2. **对象生命周期**：回调不依赖捕获的裸 `this`。
+3. **业务时序**：较旧请求即使较晚完成，也不会覆盖新请求。
+
+## 7. 具体示例
+
+### UE::Tasks
+
+`AsyncScoreComponent.h`：
+
+```cpp
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "AsyncScoreComponent.generated.h"
+
+UCLASS()
+class UAsyncScoreComponent : public UActorComponent
+{
+    GENERATED_BODY()
+
+protected:
+    virtual void BeginPlay() override;
+
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
+    // 在游戏线程发起计算；只接收普通位置快照，较新的请求替代旧请求。
+    void RequestScores(TArray<FVector> Points);
+
+private:
+    // 只在游戏线程提交当前有效请求的结果。
+    void ApplyScores(uint64 Revision, TArray<float> Scores);
+
+    // 下列状态全部归游戏线程拥有，后台任务不读取它们。
+    uint64 RequestRevision = 0;
+
+    bool bAcceptResults = false;
+
+    TArray<float> LatestScores;
+};
+```
+
+`AsyncScoreComponent.cpp`：
+
+```cpp
+#include "AsyncScoreComponent.h"
+
+#include "Async/Async.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
+#include "Tasks/Task.h"
+
+void UAsyncScoreComponent::BeginPlay()
+{
+    Super::BeginPlay();
+
+    bAcceptResults = true;
+}
+
+void UAsyncScoreComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    check(IsInGameThread());
+
+    bAcceptResults = false;
+
+    ++RequestRevision;
+
+    Super::EndPlay(EndPlayReason);
+}
+
+void UAsyncScoreComponent::RequestScores(TArray<FVector> Points)
+{
+    check(IsInGameThread());
+
+    if (!bAcceptResults)
+    {
+        return;
+    }
+
+    const uint64 Revision = ++RequestRevision;
+    
+	// 不直接使用 this 的原因是异步任务的执行时间是不固定的。 
+    TWeakObjectPtr<UAsyncScoreComponent> WeakThis(this);
+
+    // 提交后台执行计算任务
+    UE::Tasks::Launch(UE_SOURCE_LOCATION,
+        [WeakThis, Revision, Points = MoveTemp(Points)]()
+        {
+            // 用于 CPU 性能分析，可帮助你在 Unreal Insights 中识别这段计算
+            TRACE_CPUPROFILER_EVENT_SCOPE(ComputeCandidateScores);
+
+            TArray<float> Scores;
+
+            Scores.SetNumUninitialized(Points.Num());
+
+            for (int32 Index = 0; Index < Points.Num(); ++Index)
+            {
+                Scores[Index] = static_cast<float>(Points[Index].SizeSquared());
+            }
+
+            // 将计算的结果回传至游戏线程
+            AsyncTask(ENamedThreads::GameThread,
+                [WeakThis, Revision, Scores = MoveTemp(Scores)]() mutable
+                {
+                    if (UAsyncScoreComponent* Component = WeakThis.Get())
+                    {
+                        Component->ApplyScores(Revision, MoveTemp(Scores));
+                    }
+                });
+        });
+}
+
+void UAsyncScoreComponent::ApplyScores(uint64 Revision, TArray<float> Scores)
+{
+    check(IsInGameThread());
+
+    if (!bAcceptResults || Revision != RequestRevision)
+    {
+        return;
+    }
+
+    LatestScores = MoveTemp(Scores);
+
+    // 在这里根据项目需要通知 UI 或更新游戏状态。
+}
+```
+
+- `UE_SOURCE_LOCATION` 是 Unreal Engine 提供的一个宏，用于记录当前代码所在的源文件位置，主要用于任务调试和性能分析。
+- Points = MoveTemp(Points) 通过移动语义可以避免拷贝一份。 
+- Revision 阻止旧任务的结果生效
+
+### ParallelFor
+
+```cpp
+#include "Async/ParallelFor.h"
+
+TArray<FVector> Input = /* 已经准备好的普通位置快照 */;
+
+TArray<float> Output;
+
+Output.SetNumUninitialized(Input.Num());
+
+ParallelFor(Input.Num(), [&Input, &Output](int32 Index)
+{
+    Output[Index] = static_cast<float>(Input[Index].SizeSquared());
+});
+
+// 这里循环已完成，Output 可以由调用者继续使用。
+```
+
+`Input` 不在循环期间变化，`Output` 提前分配完成，每次迭代写独立的 float 元素，没有并发 Add/Resize；每个索引只由对应迭代写入。这是它安全的关键。
+
+错误使用：
+
+```cpp
+ParallelFor(Input.Num(), [&Input, &Output](int32 Index)
+{
+    Output.Add(static_cast<float>(Input[Index].SizeSquared())); // 错：并发改数组结构。
+});
+```
+
+### FRunnable
+
+适用于长期接收外部数据、持续消费专门队列等需要独立生命周期的工作。短小计算优先采用任务系统。
+
+`FRunnable` 定义工作逻辑，`FRunnableThread` 创建并管理执行线程。
+
+```cpp
+创建线程 → 在线程中 Init → Init 成功后 Run → Run 返回后 Exit
+```
+
+那么如何让拥有者尝试关闭或退出此进程呢？ 
+
+1. 停止接收新工作，组件不再向工作队列提交新的 AI 计算任务。
+
+2. 设置停止标志，通过原子操作将此变量设置为 false。 
+
+   ```cpp
+   while (!bStopRequested.Load())
+   {
+       // 处理任务
+   }
+   
+   return 0;
+   ```
+
+3. 唤醒正在等待的线程。有些工作线程为了节省 CPU，不会一直空转，需要唤醒工作线程`WorkEvent->Trigger();`，让它有机会检查停止标志并退出。
+
+最后需要释放资源。
+
+```cpp
+Game Thread（游戏线程）
+    │
+    └── UMyWorkerComponent（拥有者）
+          │
+          ├── FMyWorker（工作逻辑对象）
+          │     ├── 任务队列
+          │     ├── 停止标志
+          │     └── Run()
+          │
+          └── FRunnableThread（线程管理对象）
+                │
+                └── OS Worker Thread
+                      │
+                      └── 执行 FMyWorker::Run()
+                            │
+                            ├── 任务 A
+                            ├── 任务 B
+                            └── 任务 C
+```
+
+MyWorker.h
+
+```cpp
+#pragma once
+
+#include "CoreMinimal.h"
+#include "HAL/Runnable.h"
+#include "Containers/Queue.h"
+#include "Templates/Atomic.h"
+
+class FMyWorker : public FRunnable
+{
+public:
+    // 供游戏线程添加任务
+    void AddTask(int32 Value)
+    {
+        TaskQueue.Enqueue(Value);
+    }
+
+    // 在工作线程中执行
+    virtual uint32 Run() override
+    {
+        while (!bStopRequested.Load())
+        {
+            int32 Value;
+
+            if (TaskQueue.Dequeue(Value))
+            {
+                // 模拟耗时计算
+                const int32 Result = Value * Value;
+
+                UE_LOG(LogTemp, Log, TEXT("Worker: %d -> %d"), Value, Result);
+            }
+            else
+            {
+                // 没有任务，稍微休眠
+                FPlatformProcess::Sleep(0.01f);
+            }
+        }
+
+        UE_LOG(LogTemp, Log, TEXT("Worker Run End"));
+
+        return 0;
+    }
+
+    // 请求工作线程退出
+    virtual void Stop() override
+    {
+        bStopRequested.Store(true);
+    }
+
+private:
+    // 多生产者、单消费者队列
+    TQueue<int32, EQueueMode::Mpsc> TaskQueue;
+
+    // 跨线程共享的停止标志
+    TAtomic<bool> bStopRequested{false};
+};
+```
+
+MyWorkerComponent.h
+
+```cpp
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "MyWorkerComponent.generated.h"
+
+class FMyWorker;
+class FRunnableThread;
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class UMyWorkerComponent : public UActorComponent
+{
+    GENERATED_BODY()
+
+public:
+    virtual void BeginPlay() override;
+
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+    FMyWorker* Worker = nullptr;
+
+    FRunnableThread* WorkerThread = nullptr;
+};
+```
+
+MyWorkerComponent.cpp
+
+```cpp
+#include "MyWorkerComponent.h"
+
+#include "MyWorker.h"
+#include "HAL/RunnableThread.h"
+
+void UMyWorkerComponent::BeginPlay()
+{
+    Super::BeginPlay();
+
+    // 1. 创建工作逻辑对象
+    Worker = new FMyWorker();
+
+    // 2. 创建真正的操作系统线程
+    WorkerThread = FRunnableThread::Create(
+        Worker,
+        TEXT("MyWorkerThread")
+    );
+
+    // 创建失败时清理 Worker
+    if (!WorkerThread)
+    {
+        delete Worker;
+        Worker = nullptr;
+        return;
+    }
+
+    // 3. 提交三个任务
+    Worker->AddTask(10);
+    Worker->AddTask(20);
+    Worker->AddTask(30);
+}
+
+void UMyWorkerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    // 1. 请求线程退出
+    if (Worker)
+    {
+        Worker->Stop();
+    }
+
+    // 2. 等待 Run() 真正结束
+    if (WorkerThread)
+    {
+        WorkerThread->WaitForCompletion();
+
+        delete WorkerThread;
+        WorkerThread = nullptr;
+    }
+
+    // 3. 线程已经结束，可以释放 Worker
+    delete Worker;
+    Worker = nullptr;
+
+    Super::EndPlay(EndPlayReason);
+}
+```
+
+### 异步存档
+
+本地 `AsyncSaveGameToSlot` 先调用 `SaveGameToMemory` 将对象序列化为字节，然后调用平台存档系统的 `SaveGameAsync`。正常 Gameplay 使用下，对象序列化发生在发起它的游戏线程，平台异步工作再处理存储阶段。
+
+## 8. 死锁、卡顿和并行变慢
+
+死锁：A 持有 Lock1 等 Lock2，B 持有 Lock2 等 Lock1。
+
+任务太小，调度成本比计算还大。
+
+### 伪共享：没数据竞争，也可能慢
+
+不同线程分别写相邻变量，变量可能位于同一 CPU 缓存行。缓存一致性使这条缓存行在核心间反复转移，拖慢执行。
+
+> 在此之前呢，先了解一下什么是缓存一致性？
+> 
+>
+> 缓存一致性（Cache Coherence）：多个 CPU 核心缓存同一内存地址的数据时，通过硬件协议协调读写，确保各核心不会持续使用过期的数据副本。
+> 
+>
+> 假设两个 CPU 核心各自保存了一份变量 `Count` 的副本。当核心 A 修改了 `Count`，缓存一致性机制会让核心 B 原来的副本失效。这样核心 B 下次读取时，就必须获取最新的数据，而不能继续使用旧值。
+
+下方的两个线程，使用的变量，它不会出现数据竞争，但仍然会导致变慢。 
+
+```cpp
+struct FTaskCounters
+{
+    std::atomic<int32> AICount{0};
+    std::atomic<int32> AnimationCount{0};
+};
+
+FTaskCounters Counters;
+
+// Worker A
+for (int32 i = 0; i < 1000000; ++i)
+{
+    Counters.AICount.fetch_add(1, std::memory_order_relaxed);
+}
+
+// Worker B
+for (int32 i = 0; i < 1000000; ++i)
+{
+    Counters.AnimationCount.fetch_add(1, std::memory_order_relaxed);
+}
+```
+
+现代 CPU 通常是以缓存行为单位进行缓存一致性的管理。按照示例中两个 int32 类型，它们很有可能被放在同一个缓存行当中。 
+
+例如，核心 A 正在执行线程 A 的任务，它修改了 AICount 的值。由于缓存一致性，核心 B 对应的记录这个 AICount 的缓存行会被设置为无效，下一次使用的时候需要重新获取，进而就导致核心 A 上的线程调整了值，会导致核心 B 的缓存无效，每次使用的时候需要重新获取。同样的，对核心 B 进行调整，核心 A 的数据也会被设置无效。 
+
+因此真正的浪费就在缓存一致性上面。 
+
+调整的方向可以是将两个变量设置在不同的缓存行，就需要进行对齐。按照现在主流 CPU，它的缓存行大小通常是 64 字节，不过这样做之后会导致空间浪费。 
+
+```cpp
+struct FCounters
+{
+    alignas(64) std::atomic<int32> A{0};
+    alignas(64) std::atomic<int32> B{0};
+};
+```
+
+## 一些提问
+
+**为什么 ParallelFor 可以按引用捕获局部数组，而长期异步任务一般不行？**
+
+因为 ParallelFor 是一个同步接口，它会等待内部的工作线程并行执行完毕之后才会退出。 捕获的局部数组在这个过程中它是一直存在的，不会失效。 对于长期异步来说，很有可能在执行过程中这个局部数组就已经被销毁了，这会导致非法，不会保证在当前作用域结束前完成，因此长期异步任务通常可以借助移动语义或者直接拷贝一份进去。
