@@ -1,4 +1,5 @@
 ---
+import { blogTagLabel } from '../../../data/blog-tags';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import ArticleDetailLayout from '../../../layouts/ArticleDetailLayout.astro';
 import ArticleOutlineNav from '../../../components/ArticleOutlineNav.astro';
@@ -20,12 +21,12 @@ const publishedDate = post.data.publishedAt.toLocaleDateString('zh-CN', {
   pageTitle={`${post.data.title} - Orca丶的博客`}
   title={post.data.title}
   description={post.data.description}
-  eyebrow={`${post.data.tags[0] ?? 'DEVLOG'} / ${publishedDate}`}
+  eyebrow={`${blogTagLabel(post.data.tags[0] ?? 'DEVLOG')} / ${publishedDate}`}
   footerNote="本网站基于 Astro 构建"
   footerCopyright="© 2026 Orca丶. 保留所有权利。"
 >
   <ArticleOutlineNav slot="leftSidebar" side="left" />
   <a slot="preamble" class="back-link" href="/article/">← 返回文章列表</a>
-  {post.data.tags.length > 0 && <ul slot="metadata" class="post-tags" aria-label="文章标签">{post.data.tags.map(tag => <li>{tag}</li>)}</ul>}
+  {post.data.tags.length > 0 && <ul slot="metadata" class="post-tags" aria-label="文章标签">{post.data.tags.map(tag => <li>{blogTagLabel(tag)}</li>)}</ul>}
   <Content />
 </ArticleDetailLayout>

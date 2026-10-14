@@ -1,0 +1,67 @@
+---
+import '../../../../styles/global.css';
+import '../../../../styles/article-index.css';
+import '../../../../styles/source-reading.css';
+import { getCollection } from 'astro:content';
+import { blogTagLabel } from '../../../../data/blog-tags';
+import { buildSourceReadingSection, sourceReadingTopics } from '../../../../data/source-reading';
+
+const section = buildSourceReadingSection(await getCollection('blog'));
+
+const formatDate = (date: Date) => date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="虚幻引擎源码解读：从源码理解引擎机制，记录关键流程与设计思路。" />
+    <meta name="theme-color" content="#f7f6f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171a16" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>虚幻引擎源码解读专区 - Orca丶</title>
+  </head>
+  <body class="page-with-paint-splashes">
+    <header><div class="nav-inner"><nav aria-label="主导航"><a href="/#home">首页</a><a href="/#projects">项目</a><a href="/article/" class="active" aria-current="page">文章</a><a href="/#about">关于</a><a href="/#contact">联系</a></nav></div></header>
+    <main class="article-index source-reading-page">
+      <a class="source-back-link" href="/article/">← 返回文章列表</a>
+      <section class="article-hero" aria-labelledby="source-title">
+        <div>
+          <p class="article-kicker">UNREAL ENGINE / SOURCE READING</p>
+          <h1 id="source-title">虚幻引擎<br /><span>源码解读专区</span></h1>
+          <p class="article-hero-copy">从源码理解引擎机制，记录关键流程与设计思路。</p>
+        </div>
+        <dl class="article-stats">
+          <div><dt>已收录</dt><dd>{section.count}<small>篇</small></dd></div>
+          <div><dt>最近发布</dt><dd class="article-stat-date">{section.latestPublishedAt ? formatDate(section.latestPublishedAt) : '持续整理中'}</dd></div>
+        </dl>
+      </section>
+      <section class="article-section latest-section" aria-labelledby="source-articles-title" data-source-reading>
+        <div class="article-section-heading"><p>EXPLORE THE SOURCE</p><h2 id="source-articles-title">源码解读</h2></div>
+        <label class="source-search"><span>搜索文章</span><input type="search" placeholder="搜索标题、摘要或标签…" data-source-search /></label>
+        <div class="source-topics" role="group" aria-label="按主题筛选">
+          <button type="button" data-source-topic="" aria-pressed="true" aria-controls="source-cards">全部 <span>{section.count}</span></button>
+          {section.topics.map(topic => <button type="button" data-source-topic={topic.tag} aria-pressed="false" aria-controls="source-cards">{topic.label} <span>{topic.count}</span></button>)}
+        </div>
+        <p class="source-results" data-source-results aria-live="polite">已收录 {section.count} 篇解读</p>
+        <div class="latest-grid" id="source-cards">
+          {section.articles.map(post => <article class="latest-card source-card" data-source-card data-topics={JSON.stringify(sourceReadingTopics(post))} data-search={[post.data.title, post.data.description, ...post.data.tags, ...post.data.tags.map(blogTagLabel)].join(' ')}>
+            <p class="article-card-label">{sourceReadingTopics(post).map(blogTagLabel).join(' / ') || '源码解读'}</p>
+            <h3><a href={`/article/blog/${post.id}/`}>{post.data.title}</a></h3>
+            {post.data.description.trim() && <p class="article-card-description">{post.data.description}</p>}
+            <div class="article-card-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time><a href={`/article/blog/${post.id}/`} aria-label={`阅读：${post.data.title}`}>阅读解读 ↗</a></div>
+          </article>)}
+        </div>
+        <div class="article-empty" data-source-empty hidden={section.count > 0}>
+          <p>{section.count ? '没有找到符合条件的文章。' : '源码解读文章正在整理中。'}</p>
+          <button type="button" data-source-reset hidden={section.count === 0}>清除搜索和主题筛选</button>
+        </div>
+      </section>
+    </main>
+    <footer class="article-index-footer"><a href="/article/">← 返回文章列表</a><span>© 2026 Orca丶</span></footer>
+    <script>
+      import { initSourceReading } from '../../../../scripts/source-reading';
+      initSourceReading();
+    </script>
+  </body>
+</html>

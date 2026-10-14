@@ -17,7 +17,7 @@
 .knowledge-card { border: 1px solid var(--line); box-shadow: 4px 4px 0 var(--shadow); padding: 25px 27px; transition: background .2s, transform .2s; }
 .knowledge-card:hover { background: var(--card-hover); transform: translate(-2px, -2px); }
 .knowledge-card > p:first-child { color: var(--muted); font-size: 12px; font-weight: 700; margin: 0 0 10px; }
-.knowledge-card h2 { font-size: clamp(25px, 3vw, 34px); line-height: 1.25; margin: 0; }
+.knowledge-card h2 { font-size: var(--article-card-title-size); line-height: 1.4; margin: 0; }
 .knowledge-card h2 a:hover { color: var(--pink); }
 .knowledge-card-description { color: var(--muted); line-height: 1.7; margin: 12px 0 20px; }
 .knowledge-card > div { align-items: center; display: flex; flex-wrap: wrap; font-size: 12px; font-weight: 700; gap: 12px; justify-content: space-between; }

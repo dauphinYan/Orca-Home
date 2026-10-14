@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+SC:wght@400;500;700;900&family=ZCOOL+KuaiLe&display=swap');
 :root{color-scheme:light;--paper:#f7f6f0;--paper-grain:radial-gradient(#00000012 .55px,transparent .7px);--ink:#0b0b0b;--muted:#666;--line:#0003;--line-subtle:#18181812;--dot:#111;--media:#080808;--card-hover:#b5ff1620;--dialog-border:#111;--shadow:#0002;--pink:#ff006d;--lime:#b5ff16;--code-bg:#efeee8;--code-ink:#1f2328;--code-line:#1f232822;font-family:'Noto Sans SC',Arial,sans-serif;color:var(--ink);background-color:var(--paper);background-image:var(--paper-grain);background-size:4px 4px;font-synthesis:none}
+:root { --article-card-title-size: clamp(18px, 1.7vw, 24px); }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{min-height:100dvh;margin:0;display:flex;flex-direction:column;background:transparent;}
@@ -166,7 +167,7 @@ nav a{font-size:15px}
  .project-bottom{font-size:24px;padding:20px 18px 12px}
  .blog-grid{grid-template-columns:1fr;gap:12px}
  .blog-card{min-height:150px;padding:17px 54px 16px 17px}
- .blog-card h3{font-size:21px}
+ .blog-card h3{font-size:var(--article-card-title-size)}
  .about .bio{font-size:15px;line-height:1.9}
 .manifesto{font-size:28px;width:max-content;margin:30px 20px 15px auto}
 .contact-links{flex-wrap:wrap;gap:25px 35px}
