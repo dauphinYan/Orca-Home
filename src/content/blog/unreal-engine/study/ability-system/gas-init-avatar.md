@@ -3,7 +3,7 @@ title: "ASC——状态归属、初始化与 Avatar 生命周期"
 description: ""
 publishedAt: 2026-10-14
 tags: ["Unreal Engine","Ability System","源码解读"]
-draft: true
+draft: false
 ---
 
 本文章仅代表我个人在学习过程中的总结与思考，如有错误欢迎联系我进行更正。
