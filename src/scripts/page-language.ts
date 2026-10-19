@@ -29,10 +29,10 @@ export function initPageLanguage() {
 
   const attributes: { element: Element; name: string; zh: string; en: string }[] = [];
 
-  document.querySelectorAll('[aria-label], [alt], [placeholder], meta[name="description"]').forEach(element => {
+  document.querySelectorAll('[aria-label], [alt], [title], [placeholder], meta[name="description"]').forEach(element => {
     if (element.closest('[data-language-content]')) return;
 
-    for (const name of ['aria-label', 'alt', 'content', 'placeholder']) {
+    for (const name of ['aria-label', 'alt', 'title', 'content', 'placeholder']) {
       const original = element.getAttribute(name);
 
       if (original && translations[original]) {
@@ -74,6 +74,7 @@ export function initPageLanguage() {
     });
 
     button.lang = english ? 'zh-CN' : 'en';
+    button.textContent = english ? '中' : 'En';
     button.setAttribute('aria-label', english ? '切换为中文' : 'Switch to English');
     button.title = english ? '切换为中文' : 'Switch to English';
 
