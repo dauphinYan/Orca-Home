@@ -53,6 +53,42 @@ const translations = await getPageTranslations(Astro.url.pathname);
     :global(.nav-inner:has([data-language-switch]) nav a) { width: 44px; padding-inline: 0; }
 
   }
+
+  /* English labels need their own spacing; Chinese keeps the existing layout.
+     The language switch updates <html lang>, including the saved preference. */
+  :global(html:lang(en) .nav-inner > nav) { gap: 36px; }
+
+  :global(html:lang(en) .nav-inner > nav > a) { white-space: nowrap; }
+
+  @media (max-width: 840px) {
+    :global(html:lang(en) .nav-inner:has([data-language-switch])) { gap: 20px; }
+
+    :global(html:lang(en) .nav-inner:has([data-language-switch]) > nav) { gap: 16px; }
+  }
+
+  @media (max-width: 720px) {
+    :global(html:lang(en) .nav-inner:has([data-language-switch])) { gap: 12px; }
+
+    :global(html:lang(en) .nav-inner:has([data-language-switch]) > nav) {
+      flex: 1;
+      min-width: 0;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    :global(html:lang(en) .nav-inner:has([data-language-switch]) > nav > a) {
+      width: auto;
+      min-width: 0;
+      padding-inline: 2px;
+      font-size: clamp(12px, 3.2vw, 15px);
+    }
+  }
+
+  @media (max-width: 420px) {
+    :global(html:lang(en) .nav-inner:has([data-language-switch])) { gap: 8px; }
+
+    :global(html:lang(en) .nav-inner:has([data-language-switch]) > nav) { gap: 4px; }
+  }
 </style>
 
 <script>
