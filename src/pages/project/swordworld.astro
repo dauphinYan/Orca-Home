@@ -1,0 +1,38 @@
+---
+import LanguageSwitch from '../../components/LanguageSwitch.astro';
+import '../../styles/global.css';
+import '../../styles/swordworld.css';
+import { swordworld as project } from '../../data/swordworld';
+import { profile } from '../../data/portfolio';
+import MediaViewer from '../../components/MediaViewer.astro';
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="剑与世界 — Orca丶的游戏客户端开发作品。Unreal Engine 5.4，历时两个月单人开发，实现完整 Boss 战流程。" />
+    <meta name="theme-color" content="#f7f6f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171a16" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>剑与世界 · 游戏开发作品 — Orca丶</title>
+  </head>
+  <body class="swordworld-page">
+    <header><div class="nav-inner"><nav aria-label="主导航"><a href="/">首页</a><a href="/#projects" class="active" aria-current="location">项目</a><a href="/article/">文章</a><a href={`mailto:${profile.email}`}>联系</a></nav><LanguageSwitch /></div></header>
+    <main>
+      <section class="sw-banner" aria-labelledby="project-title">
+        <div><h1 id="project-title">剑与世界<span>′</span></h1></div>
+        <div class="sw-banner-content"><dl class="sw-facts">{project.facts.map(fact => <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl><div class="sw-actions"><a class="sw-button" href="#demo">观看演示 ↓</a>{project.repository && <a class="sw-text-link" href={project.repository} target="_blank" rel="noopener noreferrer">代码仓库 ↗</a>}{project.download && <a class="sw-text-link" href={project.download} target="_blank" rel="noopener noreferrer">下载试玩 ↗</a>}</div></div>
+      </section>
+      <section class="content-row sw-row" id="overview"><div class="section-title"><h2>游戏介绍<span>′</span></h2></div><div class="sw-content">{project.introduction ? <p class="sw-copy">{project.introduction}</p> : <p class="sw-pending">待补充</p>}{project.responsibilities && <div class="sw-responsibilities"><h3>个人职责</h3><p class="sw-copy">{project.responsibilities}</p></div>}</div></section>
+      <section class="content-row sw-row" id="demo"><div class="section-title"><h2>实机演示<span>′</span></h2></div><div class="sw-content"><iframe class="sw-player" src={project.player} title="剑与世界实机演示 — Bilibili 视频播放器" loading="lazy" allow="fullscreen" allowfullscreen></iframe><a class="sw-video-link" href={project.video} target="_blank" rel="noopener noreferrer">在 Bilibili 打开 ↗</a></div></section>
+      <section class="content-row sw-row" id="gallery"><div class="section-title"><h2>游戏截图<span>′</span></h2></div><div class="sw-content sw-screenshots">{project.screenshots.map(shot => <figure>{shot.src ? <button class="sw-capture screenshot-button" aria-label={`放大查看${shot.title}`}><img src={shot.src} alt={shot.alt} loading="lazy" /></button> : <div class="sw-capture-placeholder"><span>{shot.title}</span><small>截图待补充</small></div>}{shot.caption && <figcaption>{shot.caption}</figcaption>}</figure>)}</div></section>
+      {project.sections.map(section => {
+        const filledSlots = section.slots.filter(slot => slot.content.trim());
+        return <section class="content-row sw-row" id={section.id}><div class="section-title"><h2>{section.title}<span>′</span></h2></div><div class="sw-content">{filledSlots.length ? filledSlots.map(slot => <article class="sw-detail"><h3>{slot.title}</h3><p class="sw-copy">{slot.content}</p></article>) : <p class="sw-pending">待补充</p>}</div></section>;
+      })}
+    </main>
+    <footer class="sw-footer"><a href="/#projects">← 返回作品集</a><a href={`mailto:${profile.email}`}>联系我 ↗</a><span>© 2026 Orca丶</span></footer>
+    <MediaViewer />
+  </body>
+</html>

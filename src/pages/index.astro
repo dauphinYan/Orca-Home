@@ -3,6 +3,7 @@ import { blogTagLabel } from '../data/blog-tags';
 import '../styles/global.css';
 import '../styles/portfolio.css';
 import Icon from '../components/Icon.astro';
+import LanguageSwitch from '../components/LanguageSwitch.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { profile, projects } from '../data/portfolio';
 import { blogPlaceholders } from '../data/blog';
@@ -25,7 +26,7 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
 <html lang="zh-CN">
   <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="description" content="Orca丶 的独立游戏开发作品集。Unreal Engine、C++、游戏设计，把想法变成可玩的世界。" /><meta name="theme-color" content="#f7f6f0" media="(prefers-color-scheme: light)" /><meta name="theme-color" content="#171a16" media="(prefers-color-scheme: dark)" /><link rel="preload" href={heroArt} as="image" type="image/webp" /><title>Orca丶 — 把想法，变成可玩的世界</title><link rel="icon" href="/favicon.svg" type="image/svg+xml" /></head>
  <body class="page-with-paint-splashes">
-   <header><div class="nav-inner"><nav aria-label="主导航"><a href="#home" class="active">首页</a><a href="#projects">项目</a><a href="/article/">文章</a><a href="#about">关于</a><a href="#contact">联系</a></nav></div></header>
+   <header class="home-header"><div class="nav-inner"><nav aria-label="主导航"><a href="#home" class="active">首页</a><a href="#projects">项目</a><a href="/article/">文章</a><a href="#about">关于</a><a href="#contact">联系</a></nav><LanguageSwitch /></div></header>
   <main>
    <section id="home" class="hero"><div class="hero-art" aria-hidden="true"></div><div class="hero-copy"><h1><span class="hello">你好，我是</span><span class="name">Orca丶</span></h1><p class="profession">Unreal Engine / C++ / 游戏开发</p><p class="tagline">把想法，变成可玩的世界。</p></div><span class="hero-spark" aria-hidden="true">✦</span></section>
     <section id="skills" class="content-row skills"><div class="section-title"><h2>技能<span>′</span></h2><p>SKILLS <b>↗</b></p></div><div class="skill-grid">{skills.map(skill => <div class="skill-card">{skill.image ? <img class="skill-logo" src={skill.image} width="60" height="60" alt={`${skill.name} 图标`} /> : <Icon name={skill.icon!} />}<h3>{skill.name}</h3></div>)}</div></section>
@@ -42,3 +43,16 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
   </script>
  </body>
 </html>
+<style>
+  :global(html[lang="en"]) .section-title h2 { font-size: clamp(28px, 3vw, 43px); white-space: normal; }
+
+  :global(html[lang="en"]) .profession { max-width: 100%; width: fit-content; }
+
+  :global(html[lang="en"]) .tagline { max-width: 100%; width: fit-content; white-space: normal; }
+
+  @media (max-width: 720px) {
+    :global(html[lang="en"]) .profession { margin-left: 0; font-size: clamp(12px, 3.5vw, 17px); }
+
+    :global(html[lang="en"]) .tagline { margin-left: 0; font-size: clamp(17px, 4.5vw, 22px); }
+  }
+</style>

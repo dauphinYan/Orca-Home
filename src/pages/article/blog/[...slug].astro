@@ -1,6 +1,6 @@
 ---
 import { blogTagLabel } from '../../../data/blog-tags';
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
 import ArticleDetailLayout from '../../../layouts/ArticleDetailLayout.astro';
 import ArticleOutlineNav from '../../../components/ArticleOutlineNav.astro';
 
@@ -13,6 +13,8 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const englishPost = await getEntry('blogEnglish', post.id);
+const EnglishContent = englishPost && !englishPost.data.draft ? (await render(englishPost)).Content : undefined;
 const publishedDate = post.data.publishedAt.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
@@ -29,4 +31,5 @@ const publishedDate = post.data.publishedAt.toLocaleDateString('zh-CN', {
   <a slot="preamble" class="back-link" href="/article/">← 返回文章列表</a>
   {post.data.tags.length > 0 && <ul slot="metadata" class="post-tags" aria-label="文章标签">{post.data.tags.map(tag => <li>{blogTagLabel(tag)}</li>)}</ul>}
   <Content />
+  {EnglishContent && <EnglishContent slot="english" />}
 </ArticleDetailLayout>

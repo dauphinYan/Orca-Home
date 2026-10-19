@@ -15,6 +15,9 @@
 .post-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .post-tags li { border: 1px solid var(--line); font-size: 12px; font-weight: 700; padding: 5px 9px; }
 .article-body { border-top: 1px solid var(--line); font-size: 17px; line-height: 1.9; margin-top: 42px; padding-top: 28px; }
+.article-body[hidden] { display: none !important; }
+.article-body[lang="en"] { overflow-wrap: anywhere; }
+html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body .katex-display { overflow-x: auto; overflow-y: hidden; padding: .25em 0; }
 .article-body h2 { font-size: clamp(28px, 4vw, 42px); font-style: italic; line-height: 1.2; margin: 46px 0 18px; }
 .article-body h2::after { content: ''; display: block; width: 74px; height: 6px; background: var(--pink); margin-top: 8px; transform: rotate(-2deg); }

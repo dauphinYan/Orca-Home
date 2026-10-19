@@ -15,6 +15,11 @@ export const profile = {
 
 export const projects = [
   {
+    title: '剑与世界', key: 'sword', tags: ['Unreal Engine 5.4', '单人开发', 'Boss 战'],
+    description: '历时两个月，使用 Unreal Engine 5.4 单人开发，实现完整 Boss 战流程。',
+    image: null, href: '/project/swordworld/', status: '重点作品',
+  },
+  {
     title: '洛克的迷宫', key: 'lockknock',
     tags: ['Unreal Engine', '探索', '迷宫', '角色扮演'],
     description: '探索克苏鲁风格的诡异迷宫，躲避恶灵与怪物的追杀。',
@@ -24,10 +29,5 @@ export const projects = [
     title: '赛尔号记牌器', key: 'seer', tags: ['逆向', 'QT'],
     description: '游戏辅助，通过抓取网络数据包，解析数据，实现对战信息记录，帮助新手玩家。',
     image: seerCover, href: null, status: '累计下载 3000+ 次',
-  },
-  {
-    title: '剑的世界', key: 'sword', tags: ['制作中', '技术验证'],
-    description: '制作中，主要目的是验证技术可行性。',
-    image: null, href: null, status: '制作中',
   },
 ];

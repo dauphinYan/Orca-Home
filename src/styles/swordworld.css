@@ -1,0 +1,53 @@
+.swordworld-page .sw-banner {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) 2fr;
+  align-items: center;
+  gap: 40px;
+  min-height: 200px;
+  padding: 28px 4%;
+  border-bottom: 1px solid var(--line);
+}
+.swordworld-page h1 { font-size: clamp(40px, 4.5vw, 64px); font-weight: 900; font-style: italic; letter-spacing: -2px; line-height: 1.2; transform: rotate(-5deg); }
+.swordworld-page h1 > span { color: var(--pink); margin-left: 10px; }
+.swordworld-page .sw-facts { display: flex; flex-wrap: wrap; gap: 16px 32px; margin: 0; }
+.swordworld-page .sw-facts dt { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+.swordworld-page .sw-facts dd { margin: 0; font-size: 14px; font-weight: 700; }
+.swordworld-page .sw-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
+.swordworld-page .sw-button { display: inline-block; padding: 9px 16px; border: 1px solid var(--ink); background: var(--lime); color: var(--media); font-size: 13px; font-weight: 900; box-shadow: 3px 3px 0 var(--ink); transition: transform .2s; }
+.swordworld-page .sw-button:hover { transform: translateY(-2px); }
+.swordworld-page .sw-text-link { font-size: 13px; font-weight: 700; }
+.swordworld-page .sw-text-link:hover, .swordworld-page .sw-footer a:hover { color: var(--pink); }
+.swordworld-page .sw-row { align-items: flex-start; padding: 24px 4%; gap: 28px; }
+.swordworld-page .sw-row .section-title { flex: 0 0 215px; margin: 5px 0; width: auto; }
+.swordworld-page .sw-row .section-title h2 { white-space: normal; overflow-wrap: anywhere; font-size: 34px; line-height: 1.35; letter-spacing: -1.5px; }
+.swordworld-page .sw-row .section-title h2 > span { font-size: 38px; margin-left: 3px; }
+.swordworld-page .sw-content { flex: 1; min-width: 0; }
+.swordworld-page .sw-pending { margin: 12px 0; color: var(--muted); font-size: 14px; }
+.swordworld-page .sw-copy { white-space: pre-line; overflow-wrap: anywhere; font-size: 15px; line-height: 1.9; margin: 0; }
+.swordworld-page .sw-detail + .sw-detail { border-top: 1px solid var(--line-subtle); margin-top: 20px; padding-top: 20px; }
+.swordworld-page .sw-detail h3, .swordworld-page .sw-responsibilities h3 { font-size: 16px; margin: 0 0 10px; }
+.swordworld-page .sw-responsibilities { margin-top: 20px; }
+.swordworld-page .sw-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: var(--media); }
+.swordworld-page .sw-video-link { display: inline-block; font-size: 12px; color: var(--muted); margin-top: 10px; text-decoration: underline; text-underline-offset: 4px; }
+.swordworld-page .sw-video-link:hover { color: var(--pink); }
+.swordworld-page .sw-screenshots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.swordworld-page .sw-screenshots figure { margin: 0; min-width: 0; }
+.swordworld-page .sw-capture-placeholder { min-height: 76px; border: 1px dashed var(--line); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; color: var(--muted); font-size: 13px; }
+.swordworld-page .sw-capture-placeholder small { font-size: 11px; }
+.swordworld-page .sw-capture { display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 1px solid var(--line); background: var(--media); cursor: zoom-in; overflow: hidden; }
+.swordworld-page .sw-capture img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.swordworld-page .sw-screenshots figcaption { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.swordworld-page .sw-footer { display: flex; align-items: center; gap: 26px; padding: 22px 4%; font-size: 12px; color: var(--muted); }
+.swordworld-page .sw-footer > span { margin-left: auto; }
+@media (max-width: 720px) {
+  .swordworld-page .nav-inner { justify-content: center; }
+  .swordworld-page header nav { position: static; transform: none; margin: 0; gap: clamp(20px, 7vw, 45px); }
+  .swordworld-page .sw-banner { grid-template-columns: 1fr; gap: 24px; min-height: 0; padding: 26px 20px; }
+  .swordworld-page .sw-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .swordworld-page .sw-row { display: block; padding: 24px 20px; }
+  .swordworld-page .sw-row .section-title { margin: 0 0 18px; max-width: 100%; transform: rotate(-3deg); }
+  .swordworld-page .sw-row .section-title h2 { font-size: 28px; }
+  .swordworld-page .sw-screenshots { grid-template-columns: 1fr; gap: 12px; }
+  .swordworld-page .sw-footer { padding: 22px 20px; flex-wrap: wrap; gap: 16px; }
+  .swordworld-page .sw-footer > span { margin-left: 0; }
+}

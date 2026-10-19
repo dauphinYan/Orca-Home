@@ -1,4 +1,6 @@
 ---
+import LanguageSwitch from '../components/LanguageSwitch.astro';
+
 import '../styles/global.css';
 import 'katex/dist/katex.min.css';
 import '../styles/article-sidebar.css';
@@ -35,7 +37,7 @@ const {
     <title>{pageTitle}</title>
   </head>
   <body class="page-with-paint-splashes article-detail-page">
-    <header><div class="nav-inner"><nav aria-label="主导航"><a href="/#home">首页</a><a href="/#projects">项目</a><a href="/article/" class="active" aria-current="page">文章</a><a href="/#about">关于</a><a href="/#contact">联系</a></nav></div></header>
+    <header><div class="nav-inner"><nav aria-label="主导航"><a href="/#home">首页</a><a href="/#projects">项目</a><a href="/article/" class="active" aria-current="page">文章</a><a href="/#about">关于</a><a href="/#contact">联系</a></nav><LanguageSwitch /></div></header>
     <slot name="leftSidebar" />
     <slot name="rightSidebar" />
     <div class="article-decor article-decor-left" aria-hidden="true"><span>+</span><i></i><b>{decorLeft}</b></div>
@@ -47,7 +49,8 @@ const {
         <h1>{title}</h1>
         <p class="post-description">{description}</p>
         <slot name="metadata" />
-        <div class="article-body"><slot /></div>
+        <div class="article-body" lang="zh-CN" data-language-content={Astro.slots.has('english') ? 'zh-CN' : undefined}><slot /></div>
+        {Astro.slots.has('english') && <div class="article-body" lang="en" data-language-content="en" hidden><slot name="english" /></div>}
       </article>
     </main>
     <button class="back-to-top" type="button" aria-label="回到页面顶部" data-back-to-top hidden>TOP ↑</button>

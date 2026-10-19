@@ -1,4 +1,6 @@
 ---
+import LanguageSwitch from '../../components/LanguageSwitch.astro';
+
 import { blogTagLabel } from '../../data/blog-tags';
 import { blogPreview } from '../../data/blog-preview';
 import { buildSourceReadingSection, sourceReadingPath } from '../../data/source-reading';
@@ -13,6 +15,9 @@ const unrealCpp = await getCollection('unrealCpp', ({ data }) => !data.draft);
 const gameplaySystems = await getCollection('gameplaySystems', ({ data }) => !data.draft);
 const recommendedPosts = blogPosts.slice(0, 3);
 const leadPreview = await blogPreview(recommendedPosts[0]?.body ?? '');
+const englishPosts = await getCollection('blogEnglish', ({ data }) => !data.draft);
+const leadEnglish = englishPosts.find(post => post.id === recommendedPosts[0]?.id);
+const leadEnglishPreview = await blogPreview(leadEnglish?.body ?? '');
 const unrealArticleCount = unrealCpp.length + gameplaySystems.length;
 const totalArticleCount = blogPosts.length + unrealArticleCount;
 const latestPublishedAt = blogPosts[0]?.data.publishedAt;
@@ -47,7 +52,7 @@ const postDescription = (description: string) =>
           <a href="/article/" class="active" aria-current="page">文章</a>
           <a href="/#about">关于</a>
           <a href="/#contact">联系</a>
-        </nav>
+        </nav><LanguageSwitch />
       </div>
     </header>
 
@@ -60,7 +65,7 @@ const postDescription = (description: string) =>
         </div>
         <dl class="article-stats">
           <div><dt>已收录</dt><dd>{totalArticleCount}<small>篇</small></dd></div>
-          <div><dt>最近更新</dt><dd class="article-stat-date">{latestPublishedAt ? formatDate(latestPublishedAt) : '持续整理中'}</dd></div>
+          <div><dt>最近更新</dt><dd class="article-stat-date">{latestPublishedAt ? <time datetime={latestPublishedAt.toISOString()}>{formatDate(latestPublishedAt)}</time> : '持续整理中'}</dd></div>
         </dl>
         <span class="article-hero-mark" aria-hidden="true">ARTICLES ↗</span>
       </section>
@@ -78,7 +83,7 @@ const postDescription = (description: string) =>
               <p>以官方文档目录为骨架，用中文导读串起 C++ 编程与游戏性系统的关键概念。</p>
             </div>
             <div class="featured-section-meta">
-              <span>已收录 {unrealArticleCount} 篇导读</span>
+              <span data-i18n-en={`${unrealArticleCount} Chinese guides published`}>已收录 {unrealArticleCount} 篇导读</span>
               <strong>进入专区 ↗</strong>
             </div>
             <span class="featured-section-stamp">专区</span>
@@ -91,8 +96,8 @@ const postDescription = (description: string) =>
               <p>从源码理解引擎机制，记录关键流程与设计思路。</p>
             </div>
             <div class="featured-section-meta">
-              <span>已收录 {sourceReading.count} 篇解读</span>
-              {sourceReading.latestPublishedAt && <span>最近发布 {formatDate(sourceReading.latestPublishedAt)}</span>}
+              <span data-i18n-en={`${sourceReading.count} articles published`}>已收录 {sourceReading.count} 篇解读</span>
+              {sourceReading.latestPublishedAt && <span><span>最近发布</span> <time datetime={sourceReading.latestPublishedAt.toISOString()}>{formatDate(sourceReading.latestPublishedAt)}</time></span>}
               <strong>进入专区 ↗</strong>
             </div>
             <span class="featured-section-stamp">专区</span>
@@ -116,11 +121,16 @@ const postDescription = (description: string) =>
                 {index === 0 && leadPreview.length > 0 ? (
                   <div class="recommended-preview">
                     <p class="recommended-preview-label">正文预览</p>
-                    <div class="recommended-preview-content">
+                    <div class="recommended-preview-content" data-language-content={leadEnglish ? 'zh-CN' : undefined} lang="zh-CN">
                       {leadPreview.map(block => block.kind === 'heading'
                         ? <p class="recommended-preview-heading">{block.text}</p>
                         : <p>{block.text}</p>)}
                     </div>
+                    {leadEnglish && <div class="recommended-preview-content" data-language-content="en" lang="en" hidden>
+                      {leadEnglishPreview.map(block => block.kind === 'heading'
+                        ? <p class="recommended-preview-heading">{block.text}</p>
+                        : <p>{block.text}</p>)}
+                    </div>}
                   </div>
                 ) : <p class="article-card-description">{postDescription(post.data.description)}</p>}
                 <div class="article-card-meta">

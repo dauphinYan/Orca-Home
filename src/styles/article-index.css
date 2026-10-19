@@ -1,4 +1,8 @@
 .article-index { margin: 0 auto; max-width: 1440px; padding: 0 4% 90px; width: 100%; }
+.article-index [data-language-content][hidden] { display: none !important; }
+html[lang="en"] .article-hero h1 { width: auto; font-size: clamp(48px, 7.5vw, 108px); letter-spacing: -2px; }
+html[lang="en"] .article-section-heading h2 { line-height: 1.15; }
+html[lang="en"] .article-index :is(h1, h2, h3) { overflow-wrap: anywhere; }
 .article-hero { align-items: end; border-bottom: 1px solid var(--line); display: grid; gap: 42px; grid-template-columns: minmax(0, 1fr) auto; min-height: 285px; overflow: hidden; padding: 54px 0 44px; position: relative; }
 .article-kicker, .article-section-heading p { color: var(--muted); font-family: 'Arial Black', Arial, sans-serif; font-size: 12px; font-style: italic; letter-spacing: 2px; margin: 0 0 10px; }
 .article-hero h1 { font-size: clamp(58px, 7.5vw, 108px); font-style: italic; font-weight: 900; letter-spacing: -5px; line-height: .9; position: relative; width: max-content; }

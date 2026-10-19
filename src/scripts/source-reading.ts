@@ -1,3 +1,5 @@
+import { localize } from '../i18n/client';
+
 export function matchesSourceReading(searchText: string, topics: string[], query: string, selectedTopic: string) {
   return searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())
     && (!selectedTopic || topics.includes(selectedTopic));
@@ -28,7 +30,9 @@ export function initSourceReading() {
     let visible = 0;
 
     cards.forEach(card => {
-      const matches = matchesSourceReading(card.searchText, card.topics, search.value, selectedTopic);
+      const searchText = `${card.searchText} ${card.element.textContent}`;
+
+      const matches = matchesSourceReading(searchText, card.topics, search.value, selectedTopic);
 
       card.element.hidden = !matches;
 
@@ -37,12 +41,18 @@ export function initSourceReading() {
 
     buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.sourceTopic === selectedTopic)));
 
-    results.textContent = search.value.trim() || selectedTopic ? `找到 ${visible} 篇解读（共 ${cards.length} 篇）` : `已收录 ${cards.length} 篇解读`;
+    results.textContent = search.value.trim() || selectedTopic
+      ? localize(`找到 ${visible} 篇解读（共 ${cards.length} 篇）`, `${visible} of ${cards.length} articles found`)
+      : localize(`已收录 ${cards.length} 篇解读`, `${cards.length} articles published`);
 
     empty.hidden = visible > 0;
   }
 
   search.addEventListener('input', update);
+
+  window.addEventListener('site:language-change', update);
+
+  update();
 
   buttons.forEach(button => button.addEventListener('click', () => {
     selectedTopic = button.dataset.sourceTopic ?? '';

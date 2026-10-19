@@ -68,6 +68,3 @@ body:has(.project-dialog[open]) { overflow: hidden; }
   .article-section-title { margin-top: 0; }
   .article-index-link { margin-top: 19px; }
 }
-
-
-

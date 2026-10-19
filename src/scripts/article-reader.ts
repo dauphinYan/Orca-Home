@@ -1,7 +1,29 @@
-/** Shared reader enhancements for long-form articles outside the legacy blog route. */
+import { localize } from '../i18n/client';
+
+let outlineObserver: IntersectionObserver | undefined;
+
+/** Shared reader enhancements for long-form articles. */
 export function initArticleReader() {
   initArticleSidebarToggles();
   initArticleFooterClearance();
+
+  // Keep IDs unique when both language versions contain the same technical heading.
+  document.querySelectorAll<HTMLElement>('.article-body[data-language-content="en"]').forEach(body => {
+    const ids = new Map<string, string>();
+
+    body.querySelectorAll<HTMLElement>('[id]').forEach(element => {
+      const original = element.id;
+
+      element.id = `en-${original}`;
+      ids.set(original, element.id);
+    });
+
+    body.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
+      const id = decodeURIComponent(link.hash.slice(1));
+
+      if (ids.has(id)) link.hash = ids.get(id)!;
+    });
+  });
 
   const backToTop = document.querySelector('[data-back-to-top]');
   if (backToTop instanceof HTMLButtonElement) {
@@ -31,18 +53,46 @@ export function initArticleReader() {
     button.className = 'code-block-toggle';
     button.setAttribute('aria-controls', block.id);
     button.setAttribute('aria-expanded', 'true');
-    button.textContent = '收起';
+    button.textContent = localize('收起', 'Collapse');
     button.addEventListener('click', () => {
       const collapsed = block.classList.toggle('is-collapsed');
       button.setAttribute('aria-expanded', String(!collapsed));
-      button.textContent = collapsed ? '展开' : '收起';
+      button.textContent = collapsed ? localize('展开', 'Expand') : localize('收起', 'Collapse');
     });
     shell.append(button);
   });
 
+  initArticleOutline();
+
+  window.addEventListener('site:language-change', () => {
+    document.querySelectorAll<HTMLButtonElement>('.code-block-toggle').forEach(button => {
+      const collapsed = button.getAttribute('aria-expanded') === 'false';
+
+      button.textContent = collapsed ? localize('展开', 'Expand') : localize('收起', 'Collapse');
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-article-sidebar-toggle]').forEach(toggle => {
+      const label = toggle.dataset.articleSidebarToggle === 'knowledge'
+        ? localize('目录', 'Contents') : localize('大纲', 'Outline');
+
+      toggle.innerHTML = `<span aria-hidden="true">☰</span>${label}`;
+    });
+
+    initArticleOutline();
+  });
+}
+
+function initArticleOutline() {
+  outlineObserver?.disconnect();
+
   const toc = document.querySelector<HTMLElement>('[data-article-sidebar="outline"]');
   const tocList = toc?.querySelector<HTMLElement>('[data-article-toc-list]');
-  const headings = [...document.querySelectorAll<HTMLElement>('.article-body h2, .article-body h3, .article-body h4')];
+  const headings = [...document.querySelectorAll<HTMLElement>('.article-body:not([hidden]) :is(h2, h3, h4)')];
+
+  tocList?.replaceChildren();
+
+  if (toc) toc.hidden = headings.length === 0;
+
   if (!toc || !tocList || headings.length === 0) return;
 
   type TocNode = { level: number; heading: HTMLElement; children: TocNode[] };
@@ -85,7 +135,7 @@ export function initArticleReader() {
         const branch = document.createElement('button');
         branch.type = 'button';
         branch.className = 'article-toc-branch';
-        branch.setAttribute('aria-label', `展开或收起${node.heading.textContent}`);
+        branch.setAttribute('aria-label', localize(`展开或收起${node.heading.textContent}`, `Expand or collapse ${node.heading.textContent}`));
         branch.addEventListener('click', event => {
           event.preventDefault();
           event.stopPropagation();
@@ -129,6 +179,7 @@ export function initArticleReader() {
     revealActivePath(active.target);
   }, { rootMargin: '-15% 0px -70%' });
   headings.forEach(heading => observer.observe(heading));
+  outlineObserver = observer;
 }
 
 /** Keeps bottom floating controls above the footer's top border. */
@@ -202,7 +253,7 @@ function addArticleMobileLink(sidebar: HTMLElement) {
   link.className = 'article-sidebar-toggle';
   link.href = href;
   link.dataset.articleSidebarLink = kind;
-  link.innerHTML = '<span aria-hidden="true">☰</span>目录';
+  link.innerHTML = `<span aria-hidden="true">☰</span>${localize('目录', 'Contents')}`;
   getArticleMobileActions().append(link);
 }
 
@@ -218,7 +269,9 @@ function initArticleSidebarToggle(sidebar: HTMLElement) {
       toggle.setAttribute('aria-controls', sidebar.id);
       toggle.setAttribute('aria-expanded', 'false');
       toggle.dataset.articleSidebarToggle = kind;
-      toggle.innerHTML = `<span aria-hidden="true">☰</span>${kind === 'knowledge' ? '目录' : '大纲'}`;
+      const label = kind === 'knowledge' ? localize('目录', 'Contents') : localize('大纲', 'Outline');
+
+      toggle.innerHTML = `<span aria-hidden="true">☰</span>${label}`;
       actions.append(toggle);
     }
     if (toggle.dataset.initialized) return;

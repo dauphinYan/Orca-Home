@@ -1,15 +1,22 @@
 import { glob } from 'astro/loaders';
 import { defineCollection, z } from 'astro:content';
 
+const blogSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  publishedAt: z.coerce.date(),
+  tags: z.array(z.string()).default([]),
+  draft: z.boolean().default(false),
+});
+
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    publishedAt: z.coerce.date(),
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-  }),
+  schema: blogSchema,
+});
+
+const blogEnglish = defineCollection({
+  loader: glob({ base: './src/content/blog-en', pattern: '**/*.md' }),
+  schema: blogSchema,
 });
 
 const unrealDocSchema = z.object({
@@ -34,4 +41,4 @@ const gameplaySystems = defineCollection({
   schema: unrealDocSchema,
 });
 
-export const collections = { blog, unrealCpp, gameplaySystems };
+export const collections = { blog, blogEnglish, unrealCpp, gameplaySystems };

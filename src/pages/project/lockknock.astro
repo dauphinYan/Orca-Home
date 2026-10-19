@@ -1,4 +1,5 @@
 ---
+import LanguageSwitch from '../../components/LanguageSwitch.astro';
 import '../../styles/lockknock.css';
 import MediaViewer from '../../components/MediaViewer.astro';
 import { projects } from '../../data/portfolio';
@@ -10,7 +11,7 @@ import creature from '../../assets/projects/lock-knock/lock-knock-screenshot-2.p
 import lantern from '../../assets/projects/lock-knock/lock-knock-screenshot-3.png?url';
 import corridor from '../../assets/projects/lock-knock/lock-knock-screenshot-4.png?url';
 import chamber from '../../assets/projects/lock-knock/lock-knock-screenshot-5.png?url';
-const project = projects[0];
+const project = projects.find(project => project.key === 'lockknock')!;
 const screenshots = [scene, creature, lantern, corridor, chamber];
 const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
 ---
@@ -27,7 +28,7 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
   <body>
     <header class="game-header">
       <a class="author-logo" href="/">舞台装置<span>GrewGame</span><small>独立游戏开发</small></a>
-      <nav aria-label="专题导航"><a href="#about-game">游戏介绍</a><a href="#gallery">游戏画面</a><a href="/#projects">返回作品集 ↗</a></nav>
+      <nav aria-label="专题导航"><a href="#about-game">游戏介绍</a><a href="#gallery">游戏画面</a><a href="/#projects">返回作品集 ↗</a></nav><LanguageSwitch />
     </header>
     <main>
       <section class="game-hero" aria-labelledby="game-title">

@@ -1,7 +1,9 @@
+import { localize } from '../i18n/client';
+
 /** Mark media as an accessible viewer trigger, including asynchronously rendered diagrams. */
 export function enableMediaPreview(element: HTMLElement, label: string) {
   element.dataset.mediaPreview = '';
-  element.setAttribute('aria-label', `放大查看：${label}`);
+  element.setAttribute('aria-label', localize(`放大查看：${label}`, `Enlarge: ${label}`, element));
   element.setAttribute('aria-haspopup', 'dialog');
 
   if (element instanceof HTMLButtonElement) return;
@@ -98,7 +100,7 @@ export function initMediaViewer() {
     }
 
     trigger = element;
-    title.textContent = media.getAttribute('alt') || element.getAttribute('aria-label') || '放大查看';
+    title.textContent = media.getAttribute('alt') || element.getAttribute('aria-label') || localize('放大查看', 'Enlarge');
     content.replaceChildren(clone);
     reset();
     previousOverflow = document.documentElement.style.overflow;
@@ -108,7 +110,7 @@ export function initMediaViewer() {
 
   document.querySelectorAll<HTMLElement>('.article-body img, .screenshot-button').forEach(element => {
     if (element.closest('.mermaid-diagram-canvas')) return;
-    enableMediaPreview(element, element.getAttribute('alt') || element.querySelector('img')?.alt || '图片');
+    enableMediaPreview(element, element.getAttribute('alt') || element.querySelector('img')?.alt || localize('图片', 'Image', element));
   });
 
   document.addEventListener('click', event => {

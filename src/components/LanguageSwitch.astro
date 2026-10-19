@@ -1,0 +1,53 @@
+---
+import { getPageTranslations } from '../i18n/pages';
+
+const translations = await getPageTranslations(Astro.url.pathname);
+---
+{translations && <button data-language-switch data-translations={JSON.stringify(translations)} type="button" aria-label="Switch to English" title="Switch to English" lang="en" hidden>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M3 5h12M9 2v3M12 5c-1 6-4.2 9-9 11M5 8c1.5 3.5 4 6 7 7M13 21l4.5-10L22 21M14.4 18h6.2" />
+  </svg>
+</button>}
+
+<style>
+  button {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  button[hidden] { display: none; }
+
+  button:hover { color: var(--pink); }
+
+  button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+
+  @media (max-width: 840px) {
+    :global(.nav-inner:has([data-language-switch])) { gap: 16px; }
+
+    :global(.nav-inner:has([data-language-switch]) nav) { margin-left: 0; gap: clamp(8px, 3vw, 20px); }
+  }
+
+  @media (max-width: 420px) {
+    :global(.nav-inner:has([data-language-switch])) { padding-inline: 12px; gap: 8px; }
+
+    :global(.nav-inner:has([data-language-switch]) nav) { gap: 5px; }
+
+    :global(.nav-inner:has([data-language-switch]) nav a) { font-size: 12px; padding-inline: 0; }
+  }
+</style>
+
+<script>
+  import { initPageLanguage } from '../scripts/page-language';
+
+  initPageLanguage();
+</script>

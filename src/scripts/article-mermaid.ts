@@ -1,5 +1,6 @@
 import type { Mermaid } from 'mermaid';
 import { enableMediaPreview } from './media-viewer';
+import { localize } from '../i18n/client';
 
 /** Loads Mermaid only when the article contains diagram fences. */
 export async function initArticleMermaid() {
@@ -23,21 +24,23 @@ export async function initArticleMermaid() {
 
     const figure = document.createElement('figure');
     figure.className = 'mermaid-diagram';
-    figure.setAttribute('aria-label', `Mermaid 图表 ${index + 1}`);
+    const label = localize(`Mermaid 图表 ${index + 1}`, `Mermaid diagram ${index + 1}`, code);
+
+    figure.setAttribute('aria-label', label);
 
     const canvas = document.createElement('div');
     canvas.className = 'mermaid-diagram-canvas';
 
     const message = document.createElement('p');
     message.className = 'mermaid-diagram-error';
-    message.textContent = '图表渲染失败，请检查 Mermaid 语法。';
+    message.textContent = localize('图表渲染失败，请检查 Mermaid 语法。', 'Diagram rendering failed. Please check the Mermaid syntax.', code);
     message.setAttribute('role', 'status');
     message.hidden = true;
 
     source.before(figure);
     figure.append(canvas, message, source);
 
-    return { definition: code.textContent ?? '', source, canvas, message };
+    return { definition: code.textContent ?? '', source, canvas, message, label };
   });
 
   const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -60,7 +63,7 @@ export async function initArticleMermaid() {
         const { svg, bindFunctions } = await mermaid.render(`article-mermaid-${renderVersion}-${index}`, diagram.definition);
         diagram.canvas.innerHTML = svg;
         bindFunctions?.(diagram.canvas);
-        enableMediaPreview(diagram.canvas, `Mermaid 图表 ${index + 1}`);
+        enableMediaPreview(diagram.canvas, diagram.label);
         diagram.source.hidden = true;
         diagram.message.hidden = true;
       } catch (error) {
