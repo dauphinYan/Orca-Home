@@ -10,6 +10,15 @@ export function initPageLanguage() {
 
   const translations: Record<string, string> = JSON.parse(button.dataset.translations!);
 
+  // Keep navigation concise without shortening headings or other page copy.
+  const navigationLabels: Record<string, string> = {
+    '首页': 'Home',
+    '项目': 'Work',
+    '文章': 'Blog',
+    '关于': 'About',
+    '联系': 'Contact',
+  };
+
   // Capture original values once so repeated switches always restore Chinese exactly.
   const texts: { node: Text; zh: string; en: string }[] = [];
 
@@ -22,7 +31,8 @@ export function initPageLanguage() {
 
     const original = node.data;
 
-    const translation = translations[original.trim()];
+    const inNavigation = node.parentElement?.closest('.nav-inner > nav > a');
+    const translation = (inNavigation && navigationLabels[original.trim()]) || translations[original.trim()];
 
     if (translation) texts.push({ node, zh: original, en: original.replace(original.trim(), translation) });
   }
