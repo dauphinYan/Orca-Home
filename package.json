@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "images:webp": "node scripts/convert-images.mjs",
     "blog:new": "node scripts/new-blog.mjs",
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",

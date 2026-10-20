@@ -1,6 +1,6 @@
-import lockCover from '../assets/projects/lock-knock/cover-horizontal.jpg?url';
-import seerCover from '../assets/projects/seer-assistant/seer-assistant-screenshot.png?url';
-import avatar from '../assets/profile/hinami-aoi.jpg?url';
+import lockCover from '../assets/projects/lock-knock/cover-horizontal.webp?url';
+import seerCover from '../assets/projects/seer-assistant/seer-assistant-screenshot.webp?url';
+import avatar from '../assets/profile/hinami-aoi.webp?url';
 
 export const profile = {
   name: 'Orca丶',

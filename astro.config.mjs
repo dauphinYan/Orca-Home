@@ -3,6 +3,7 @@ import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { blogImageDelivery, remarkBlogImages } from './scripts/blog-images.mjs';
+import { imagePipeline } from './scripts/image-pipeline.mjs';
 
 const site = process.env.SITE_URL ?? 'https://dolphindream.cn';
 
@@ -11,7 +12,7 @@ const base = process.env.BASE_PATH ?? '/';
 export default defineConfig({
   site,
   base,
-  integrations: [blogImageDelivery()],
+  integrations: [imagePipeline(), blogImageDelivery()],
   markdown: {
     processor: unified({
       remarkPlugins: [[remarkBlogImages, { base }], remarkMath],
