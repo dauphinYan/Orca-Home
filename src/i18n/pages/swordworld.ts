@@ -34,6 +34,8 @@ export default {
     '截图待补充': 'Screenshots coming soon',
     '游戏机制设计': 'Gameplay Design',
     '游戏代码架构': 'Code Architecture',
+    '放大查看游戏代码架构图': 'Enlarge code architecture diagram',
+    '剑与世界游戏代码架构图': 'Sword World code architecture diagram',
     '可拓展性': 'Extensibility',
     '技术难点与解决过程': 'Technical Challenges & Solutions',
     '性能与稳定性': 'Performance & Stability',

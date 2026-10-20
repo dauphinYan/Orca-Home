@@ -1,6 +1,6 @@
 export const swordworld = {
-  video: 'https://www.bilibili.com/video/BV1GpWA6tE1A/',
-  player: 'https://player.bilibili.com/player.html?isOutside=true&aid=117432341498296&bvid=BV1GpWA6tE1A&cid=42703259296&p=1&autoplay=0',
+  video: 'https://www.bilibili.com/video/BV1Srnw6yEYf/',
+  player: 'https://player.bilibili.com/player.html?isOutside=true&bvid=BV1Srnw6yEYf&p=1&autoplay=0',
   facts: [
     { label: '开发引擎', value: 'Unreal Engine 5.4' },
     { label: '开发周期', value: '两个月' },

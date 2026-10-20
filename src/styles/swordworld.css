@@ -22,6 +22,9 @@
 .swordworld-page .sw-row .section-title h2 { white-space: normal; overflow-wrap: anywhere; font-size: 34px; line-height: 1.35; letter-spacing: -1.5px; }
 .swordworld-page .sw-row .section-title h2 > span { font-size: 38px; margin-left: 3px; }
 .swordworld-page .sw-content { flex: 1; min-width: 0; }
+.swordworld-page .sw-architecture { display: block; width: 100%; padding: 0; border: 1px solid var(--line); background: #fff; cursor: zoom-in; }
+.swordworld-page .sw-architecture img { display: block; width: 100%; height: auto; }
+.swordworld-page .sw-architecture + .sw-detail { margin-top: 20px; }
 .swordworld-page .sw-pending { margin: 12px 0; color: var(--muted); font-size: 14px; }
 .swordworld-page .sw-copy { white-space: pre-line; overflow-wrap: anywhere; font-size: 15px; line-height: 1.9; margin: 0; }
 .swordworld-page .sw-detail + .sw-detail { border-top: 1px solid var(--line-subtle); margin-top: 20px; padding-top: 20px; }
