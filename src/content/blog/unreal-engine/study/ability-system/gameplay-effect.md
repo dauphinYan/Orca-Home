@@ -6,6 +6,18 @@ tags: ["Unreal Engine","Ability System","source-reading"]
 draft: false
 ---
 
+## GE 能配置写啥？
+
+![alt text](image.webp)
+
+1. 持续与周期。DurationPolicy 执行策略、DurationMagnitude 持续多久、Period 多久执行一次、bExecutePeriodicEffectOnApplication 施加时是否先执行一次。
+2. 属性修改。Modifiers：Attribute、ModifierOp、ModifierMagnitude，改哪个属性、怎么改、数值从哪来。
+3. 自定义结算。Executions、CalculationClass 自定义结算方式。
+4. 叠层。StackingType 重叠方式、StackLimitCount 最大重叠数、持续时间刷新、周期重置、到期策略。
+5. 溢出。OverflowEffects、拒绝溢出、溢出清层，满层后会怎样。
+6. 行为组件。授予标签、应用条件、免疫、移除其他 GE 等。
+7. 表现。GameplayCues、叠层 Cue 控制。
+
 ## GE 类描述规则，Spec 装入本次参数
 
 通过 MakeOutgoingSpec 组装 Spec：
@@ -66,7 +78,7 @@ GAS 会将这个 Modifier 加入属性聚合器（Aggregator），参与 Current
 - Buff 生效：CurrentValue = 150
 - Buff 移除：CurrentValue = 100
 
-假设一个持续 5 秒，每秒减少 10 点生命值的灼烧效果，这种属于非周期性 GE：
+假设一个持续 5 秒，每秒减少 10 点生命值的灼烧效果，这种属于周期性 GE：
 
 ```cpp
 DurationPolicy = HasDuration;
