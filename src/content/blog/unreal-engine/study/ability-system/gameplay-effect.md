@@ -6,17 +6,228 @@ tags: ["Unreal Engine","Ability System","source-reading"]
 draft: false
 ---
 
-## GE 能配置写啥？
+## GE 能配置些啥？
 
-![alt text](image.webp)
+![alt text](./gameplay-effect.assets//image.webp)
 
-1. 持续与周期。DurationPolicy 执行策略、DurationMagnitude 持续多久、Period 多久执行一次、bExecutePeriodicEffectOnApplication 施加时是否先执行一次。
-2. 属性修改。Modifiers：Attribute、ModifierOp、ModifierMagnitude，改哪个属性、怎么改、数值从哪来。
-3. 自定义结算。Executions、CalculationClass 自定义结算方式。
-4. 叠层。StackingType 重叠方式、StackLimitCount 最大重叠数、持续时间刷新、周期重置、到期策略。
-5. 溢出。OverflowEffects、拒绝溢出、溢出清层，满层后会怎样。
-6. 行为组件。授予标签、应用条件、免疫、移除其他 GE 等。
-7. 表现。GameplayCues、叠层 Cue 控制。
+### DurationPolicy
+
+```cpp
+/** Policy for the duration of this effect */
+UPROPERTY(EditDefaultsOnly, Category=Duration)
+EGameplayEffectDurationType DurationPolicy;
+
+UENUM()
+enum class EGameplayEffectDurationType : uint8
+{
+    /** This effect applies instantly */
+    Instant,
+    /** This effect lasts forever */
+    Infinite,
+    /** The duration of this effect will be specified by a magnitude */
+    HasDuration
+};
+```
+
+Effect 的执行策略，分为 立即执行、无限持有、持续时间，供三种策略。
+
+DurationMagnitude
+
+```cpp
+/** Duration in seconds. 0.0 for instantaneous effects; -1.0 for infinite duration. */
+UPROPERTY(EditDefaultsOnly, Category=Duration, meta=(EditCondition="DurationPolicy == EGameplayEffectDurationType::HasDuration", EditConditionHides))
+FGameplayEffectModifierMagnitude DurationMagnitude;
+```
+
+当且仅当执行策略为 持续时间时，可配置 FGameplayEffectModifierMagnitude。
+
+```cpp
+/** Type of calculation to perform to derive the magnitude */
+UPROPERTY(EditDefaultsOnly, Category=Magnitude)
+EGameplayEffectMagnitudeCalculation MagnitudeCalculationType;
+
+/** Magnitude value represented by a scalable float */
+UPROPERTY(EditDefaultsOnly, Category=Magnitude)
+FScalableFloat ScalableFloatMagnitude;
+
+/** Magnitude value represented by an attribute-based float
+(Coefficient * (PreMultiplyAdditiveValue + [Eval'd Attribute Value According to Policy])) + PostMultiplyAdditiveValue */
+UPROPERTY(EditDefaultsOnly, Category=Magnitude)
+FAttributeBasedFloat AttributeBasedMagnitude;
+
+/** Magnitude value represented by a custom calculation class */
+UPROPERTY(EditDefaultsOnly, Category=Magnitude)
+FCustomCalculationBasedFloat CustomMagnitude;
+
+/** Magnitude value represented by a SetByCaller magnitude */
+UPROPERTY(EditDefaultsOnly, Category=Magnitude)
+FSetByCallerFloat SetByCallerMagnitude;
+```
+
+DurationMagnitude 的配置方法包含 浮点配置、属性基础、自定义计算类、根据调用者设置。
+
+Period 表示每个多长时间执行一次 Effect 效果，仅当执行策略 非立刻执行 时。
+
+```cpp
+/** Period in seconds. 0.0 for non-periodic effects */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Duration|Period", meta=(EditCondition="DurationPolicy != EGameplayEffectDurationType::Instant", EditConditionHides))
+FScalableFloat	Period;
+```
+
+bExecutePeriodicEffectOnApplication 表示施加时是否先执行一次。
+
+PeriodicInhibitionPolicy 表示 周期性的 Effect 从抑制状态恢复为正常生效状态时，应该如何处理下一次执行。
+
+```cpp
+/** Enumeration of policies for dealing with the period of a gameplay effect when inhibition is removed */
+UENUM()
+enum class EGameplayEffectPeriodInhibitionRemovedPolicy : uint8
+{
+	/** Does not reset. The period timing will continue as if the inhibition hadn't occurred. */
+	NeverReset,
+
+	/** Resets the period. The next execution will occur one full period from when inhibition is removed. */
+	ResetPeriod,
+
+	/** Executes immediately and resets the period. */
+	ExecuteAndResetPeriod,
+};
+```
+
+### Effect
+
+下面是 Effect 最关键的部分，Modifiers、Executions
+
+```cpp
+/** Array of modifiers that will affect the target of this effect */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GameplayEffect, meta=(TitleProperty=Attribute))
+TArray<FGameplayModifierInfo> Modifiers;
+
+USTRUCT(BlueprintType)
+struct GAMEPLAYABILITIES_API FGameplayModifierInfo
+{
+	GENERATED_USTRUCT_BODY()
+	
+	/** The Attribute we modify or the GE we modify modifies. */
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier, meta=(FilterMetaTag="HideFromModifiers"))
+	FGameplayAttribute Attribute;
+
+	/** The numeric operation of this modifier: Override, Add, Multiply, etc  */
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier)
+	TEnumAsByte<EGameplayModOp::Type> ModifierOp = EGameplayModOp::Additive;
+
+	/** Magnitude of the modifier */
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier)
+	FGameplayEffectModifierMagnitude ModifierMagnitude;
+
+	/** Evaluation channel settings of the modifier */
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier)
+	FGameplayModEvaluationChannelSettings EvaluationChannelSettings;
+
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier)
+	FGameplayTagRequirements	SourceTags;
+
+	UPROPERTY(EditDefaultsOnly, Category=GameplayModifier)
+	FGameplayTagRequirements	TargetTags;
+
+	/** Equality/Inequality operators */
+	bool operator==(const FGameplayModifierInfo& Other) const;
+	bool operator!=(const FGameplayModifierInfo& Other) const;
+};
+```
+
+Modifiers 主要用于修饰 Effect 该如何修改属性值，包括数值、是否允许修改。
+
+```cpp
+/** Array of executions that will affect the target of this effect */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameplayEffect)
+TArray<FGameplayEffectExecutionDefinition> Executions;
+
+USTRUCT(BlueprintType)
+struct GAMEPLAYABILITIES_API FGameplayEffectExecutionDefinition
+{
+	GENERATED_USTRUCT_BODY()
+
+	/**
+	 * Gathers and populates the specified array with the capture definitions that the execution would like in order
+	 * to perform its custom calculation. Up to the individual execution calculation to handle if some of them are missing
+	 * or not.
+	 * 
+	 * @param OutCaptureDefs	[OUT] Capture definitions requested by the execution
+	 */
+	void GetAttributeCaptureDefinitions(OUT TArray<FGameplayEffectAttributeCaptureDefinition>& OutCaptureDefs) const;
+
+	/** Custom execution calculation class to run when the gameplay effect executes */
+	UPROPERTY(EditDefaultsOnly, Category=Execution)
+	TSubclassOf<UGameplayEffectExecutionCalculation> CalculationClass;
+	
+	/** These tags are passed into the execution as is, and may be used to do conditional logic */
+	UPROPERTY(EditDefaultsOnly, Category = Execution)
+	FGameplayTagContainer PassedInTags;
+
+	/** Modifiers that are applied "in place" during the execution calculation */
+	UPROPERTY(EditDefaultsOnly, Category = Execution)
+	TArray<FGameplayEffectExecutionScopedModifierInfo> CalculationModifiers;
+
+	/** Other Gameplay Effects that will be applied to the target of this execution if the execution is successful. Note if no execution class is selected, these will always apply. */
+	UPROPERTY(EditDefaultsOnly, Category = Execution)
+	TArray<FConditionalGameplayEffect> ConditionalGameplayEffects;
+};
+```
+
+Executions 可选择自定义的 ExecutionCalculation 类，在这个类中可以自定义伤害计算逻辑，如敌人若持有无敌Buff，则不附加伤害；
+
+PassedInTags 表示传递给计算类的额外标签，供计算类根据标签执行对应的逻辑；CalculationModifiers；
+
+CalculationModifiers 表示临时改变本次计算使用的属性值；
+
+ConditionalGameplayEffects 表示在当前 Execution 在满足条件时，可以对目标应用其他的 Effect；
+
+### Stack
+
+StackingType
+
+```cpp
+/** How this GameplayEffect stacks with other instances of this same GameplayEffect */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stacking)
+EGameplayEffectStackingType	StackingType;
+
+/** Enumeration for ways a single GameplayEffect asset can stack. */
+UENUM()
+enum class EGameplayEffectStackingType : uint8
+{
+	/** No stacking. Multiple applications of this GameplayEffect are treated as separate instances. */
+	None,
+	/** Each caster has its own stack. */
+	AggregateBySource,
+	/** Each target has its own stack. */
+	AggregateByTarget,
+};
+```
+
+StackingType 有三种堆叠方式：
+
+1. 无，不合并堆叠，每次应用都单独处理。
+2. 按来源堆叠，区分来源，不同来源的 GE 分别管理。
+3. 按目标堆叠，不区分来源。
+
+然后是新的层数加入时的处理：是否刷新持续时间、是否重新计算周期、持续时间结束，是否重新计算周期，溢出时，激活其他 GE。
+
+```cpp
+/** Policy for how the effect duration should be refreshed while stacking */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stacking, meta = (EditConditionHides, EditCondition = "StackingType != EGameplayEffectStackingType::None"))
+EGameplayEffectStackingDurationPolicy StackDurationRefreshPolicy;
+
+/** Policy for how the effect period should be reset (or not) while stacking */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stacking, meta = (EditConditionHides, EditCondition = "StackingType != EGameplayEffectStackingType::None"))
+EGameplayEffectStackingPeriodPolicy StackPeriodResetPolicy;
+
+/** Policy for how to handle duration expiring on this gameplay effect */
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stacking, meta = (EditConditionHides, EditCondition = "StackingType != EGameplayEffectStackingType::None"))
+EGameplayEffectStackingExpirationPolicy StackExpirationPolicy;
+```
+
+效果表现 GameplayCue，负责 特效、音效等等表现职责。
 
 ## GE 类描述规则，Spec 装入本次参数
 
