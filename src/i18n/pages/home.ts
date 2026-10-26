@@ -68,7 +68,7 @@ export default {
     'Orca丶的头像': 'Avatar of Orca丶',
     'Unreal Engine 图标': 'Unreal Engine icon',
     'C++ 图标': 'C++ icon',
-    '欢迎你，我是*Orca丶*  ！': "Welcome, I'm *Orca丶*  !",
+    '欢迎你，我是Orca丶  ！': "Welcome, I'm Orca丶  !",
     'Orca丶 的独立游戏开发作品集。Unreal Engine、C++、游戏设计，把想法变成可玩的世界。': 'The indie game development portfolio of Orca丶. Unreal Engine, C++, and game design — turning ideas into playable worlds.',
   },
 } satisfies PageTranslationConfig;
