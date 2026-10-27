@@ -29,9 +29,9 @@ enum class EGameplayEffectDurationType : uint8
 };
 ```
 
-Effect 的执行策略，分为 立即执行、无限持有、持续时间，供三种策略。
+`Effect` 的执行策略，分为 立即执行、无限持有、持续时间，供三种策略。
 
-DurationMagnitude
+### DurationMagnitude
 
 ```cpp
 /** Duration in seconds. 0.0 for instantaneous effects; -1.0 for infinite duration. */
@@ -39,7 +39,7 @@ UPROPERTY(EditDefaultsOnly, Category=Duration, meta=(EditCondition="DurationPoli
 FGameplayEffectModifierMagnitude DurationMagnitude;
 ```
 
-当且仅当执行策略为 持续时间时，可配置 FGameplayEffectModifierMagnitude。
+当且仅当执行策略为 持续时间时，可配置 `FGameplayEffectModifierMagnitude`。
 
 ```cpp
 /** Type of calculation to perform to derive the magnitude */
@@ -64,9 +64,11 @@ UPROPERTY(EditDefaultsOnly, Category=Magnitude)
 FSetByCallerFloat SetByCallerMagnitude;
 ```
 
-DurationMagnitude 的配置方法包含 浮点配置、属性基础、自定义计算类、根据调用者设置。
+`DurationMagnitude` 的配置方法包含 浮点配置、属性基础、自定义计算类、根据调用者设置。
 
-Period 表示每个多长时间执行一次 Effect 效果，仅当执行策略 非立刻执行 时。
+### Period
+
+`Period` 表示每个多长时间执行一次 `Effect` 效果，仅当执行策略 非立刻执行 时。
 
 ```cpp
 /** Period in seconds. 0.0 for non-periodic effects */
@@ -74,9 +76,9 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Duration|Period", meta=
 FScalableFloat	Period;
 ```
 
-bExecutePeriodicEffectOnApplication 表示施加时是否先执行一次。
+`bExecutePeriodicEffectOnApplication` 表示施加时是否先执行一次。
 
-PeriodicInhibitionPolicy 表示 周期性的 Effect 从抑制状态恢复为正常生效状态时，应该如何处理下一次执行。
+`PeriodicInhibitionPolicy` 表示 周期性的 `Effect` 从抑制状态恢复为正常生效状态时，应该如何处理下一次执行。
 
 ```cpp
 /** Enumeration of policies for dealing with the period of a gameplay effect when inhibition is removed */
@@ -96,7 +98,7 @@ enum class EGameplayEffectPeriodInhibitionRemovedPolicy : uint8
 
 ### Effect
 
-下面是 Effect 最关键的部分，Modifiers、Executions
+下面是 `Effect` 最关键的部分，`Modifiers`、`Executions`
 
 ```cpp
 /** Array of modifiers that will affect the target of this effect */
@@ -136,7 +138,7 @@ struct GAMEPLAYABILITIES_API FGameplayModifierInfo
 };
 ```
 
-Modifiers 主要用于修饰 Effect 该如何修改属性值，包括数值、是否允许修改。
+`Modifiers` 主要用于修饰 `Effect` 该如何修改属性值，包括数值、是否允许修改。
 
 ```cpp
 /** Array of executions that will affect the target of this effect */
@@ -175,17 +177,17 @@ struct GAMEPLAYABILITIES_API FGameplayEffectExecutionDefinition
 };
 ```
 
-Executions 可选择自定义的 ExecutionCalculation 类，在这个类中可以自定义伤害计算逻辑，如敌人若持有无敌Buff，则不附加伤害；
+`Executions` 可选择自定义的 `ExecutionCalculation` 类，在这个类中可以自定义伤害计算逻辑，如敌人若持有无敌Buff，则不附加伤害；
 
-PassedInTags 表示传递给计算类的额外标签，供计算类根据标签执行对应的逻辑；CalculationModifiers；
+- `PassedInTags` 表示传递给计算类的额外标签，供计算类根据标签执行对应的逻辑；`CalculationModifiers`；
 
-CalculationModifiers 表示临时改变本次计算使用的属性值；
+- `CalculationModifiers` 表示临时改变本次计算使用的属性值；
 
-ConditionalGameplayEffects 表示在当前 Execution 在满足条件时，可以对目标应用其他的 Effect；
+- `ConditionalGameplayEffects` 表示在当前 `Execution` 在满足条件时，可以对目标应用其他的 `Effect`；
 
 ### Stack
 
-StackingType
+#### StackingType
 
 ```cpp
 /** How this GameplayEffect stacks with other instances of this same GameplayEffect */
@@ -205,7 +207,7 @@ enum class EGameplayEffectStackingType : uint8
 };
 ```
 
-StackingType 有三种堆叠方式：
+`StackingType` 有三种堆叠方式：
 
 1. 无，不合并堆叠，每次应用都单独处理。
 2. 按来源堆叠，区分来源，不同来源的 GE 分别管理。
@@ -227,7 +229,9 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stacking, meta = (Edit
 EGameplayEffectStackingExpirationPolicy StackExpirationPolicy;
 ```
 
-效果表现 GameplayCue，负责 特效、音效等等表现职责。
+### GameplayCue
+
+效果表现 `GameplayCue`，负责 特效、音效等等表现职责。
 
 ## GE 类描述规则，Spec 装入本次参数
 
