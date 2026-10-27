@@ -63,6 +63,7 @@ export function initArticleReader() {
   });
 
   initArticleOutline();
+  initArticleSidebarLayout();
 
   window.addEventListener('site:language-change', () => {
     document.querySelectorAll<HTMLButtonElement>('.code-block-toggle').forEach(button => {
@@ -80,6 +81,63 @@ export function initArticleReader() {
 
     initArticleOutline();
   });
+}
+
+/** Switch floating sidebars to drawers when the article leaves too little room. */
+function initArticleSidebarLayout() {
+  const article = document.querySelector<HTMLElement>('.blog-page');
+
+  const sidebars = [...document.querySelectorAll<HTMLElement>('.article-sidebar--floating')];
+
+  if (!article || sidebars.length === 0) return;
+
+  const update = () => {
+    const articleBounds = article.getBoundingClientRect();
+
+    const narrowViewport = window.matchMedia('(max-width: 1500px)').matches;
+
+    // Measure the normal sidebar position, even while its drawer is open.
+    sidebars.forEach(sidebar => sidebar.classList.remove('is-compact'));
+
+    const layouts = sidebars.map(sidebar => {
+      const bounds = sidebar.getBoundingClientRect();
+
+      const isRight = sidebar.classList.contains('article-sidebar--right');
+
+      const gap = isRight ? bounds.left - articleBounds.right : articleBounds.left - bounds.right;
+
+      return { sidebar, compact: narrowViewport || gap < 24 };
+    });
+
+    layouts.forEach(({ sidebar, compact }) => {
+      sidebar.classList.toggle('is-compact', compact);
+
+      const toggle = document.querySelector<HTMLButtonElement>(`[data-article-sidebar-toggle="${sidebar.dataset.articleSidebar}"]`);
+
+      if (toggle) {
+        toggle.hidden = sidebar.hidden;
+        toggle.classList.toggle('is-compact-toggle', compact && !sidebar.hidden);
+      }
+
+      if (!compact || sidebar.hidden) {
+        sidebar.classList.remove('is-mobile-open');
+        toggle?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.querySelector('[data-article-mobile-actions]')?.classList.toggle(
+      'has-compact-sidebar', layouts.some(({ sidebar, compact }) => compact && !sidebar.hidden),
+    );
+  };
+
+  update();
+  window.addEventListener('resize', update);
+  window.visualViewport?.addEventListener('resize', update);
+  window.addEventListener('site:language-change', update);
+
+  const observer = new ResizeObserver(update);
+
+  observer.observe(article);
 }
 
 function initArticleOutline() {

@@ -46,12 +46,12 @@ const formatDate = (date: Date) => date.toLocaleDateString('zh-CN', { year: 'num
         </div>
         <p class="source-results" data-source-results aria-live="polite">已收录 {section.count} 篇解读</p>
         <div class="latest-grid" id="source-cards">
-          {section.articles.map(post => <article class="latest-card source-card" data-source-card data-topics={JSON.stringify(sourceReadingTopics(post))} data-search={[post.data.title, post.data.description, ...post.data.tags, ...post.data.tags.map(blogTagLabel)].join(' ')}>
+          {section.articles.map(post => <a class="latest-card source-card" href={`/article/blog/${post.id}/`} data-source-card data-topics={JSON.stringify(sourceReadingTopics(post))} data-search={[post.data.title, post.data.description, ...post.data.tags, ...post.data.tags.map(blogTagLabel)].join(' ')}>
             <p class="article-card-label">{sourceReadingTopics(post).map(blogTagLabel).join(' / ') || '源码解读'}</p>
-            <h3><a href={`/article/blog/${post.id}/`}>{post.data.title}</a></h3>
+            <h3>{post.data.title}</h3>
             {post.data.description.trim() && <p class="article-card-description">{post.data.description}</p>}
-            <div class="article-card-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time><a href={`/article/blog/${post.id}/`} aria-label={`阅读：${post.data.title}`}>阅读解读 ↗</a></div>
-          </article>)}
+            <div class="article-card-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time><span>阅读解读 ↗</span></div>
+          </a>)}
         </div>
         <div class="article-empty" data-source-empty hidden={section.count > 0}>
           <p>{section.count ? '没有找到符合条件的文章。' : '源码解读文章正在整理中。'}</p>

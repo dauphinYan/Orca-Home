@@ -13,7 +13,6 @@
 .source-card { padding-right: 24px; }
 .source-card h3, .source-card .article-card-label { overflow-wrap: anywhere; }
 .source-card .article-card-meta { margin-top: auto; padding-top: 26px; }
-.source-card .article-card-meta a { color: var(--pink); }
 .source-reading-page [hidden] { display: none !important; }
 @media (max-width: 720px) {
   .source-reading-page .article-hero h1 { font-size: clamp(30px, 7.5vw, 46px); letter-spacing: -1px; }
