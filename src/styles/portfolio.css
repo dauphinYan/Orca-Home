@@ -39,7 +39,7 @@ body:has(.project-dialog[open]) { overflow: hidden; }
 .blog-card-label { color: var(--pink); font-family: 'Arial Black', Arial, sans-serif; font-size: 11px; font-style: italic; letter-spacing: 1.2px; margin: 0 0 10px; }
 .blog-card h3 { font-size: var(--article-card-title-size); line-height: 1.4; margin: 0; }
 .blog-card-description { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 9px 0 auto; }
-.blog-card time, .blog-card-status { color: var(--muted); font-size: 11px; font-weight: 700; margin-top: 13px; }
+.blog-card .blog-dates, .blog-card-status { color: var(--muted); font-size: 11px; font-weight: 700; margin-top: 13px; }
 .blog-card-published::after { background: var(--lime); color: var(--media); content: '已发布'; font-size: 10px; font-weight: 900; padding: 4px 7px; position: absolute; right: 14px; top: 14px; transform: rotate(4deg); }
 .blog-card-read { color: var(--pink); font-size: 11px; font-weight: 900; margin-top: 5px; }
 .blog-card .round-arrow { bottom: 17px; position: absolute; right: 17px; }

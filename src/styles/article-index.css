@@ -58,7 +58,7 @@ html[lang="en"] .article-index :is(h1, h2, h3) { overflow-wrap: anywhere; }
 @media (max-width: 720px) { .recommended-preview-content { -webkit-line-clamp: 6; } }
 .article-card-description { color: var(--muted); font-size: 14px; line-height: 1.7; margin: 14px 0 auto; max-width: 720px; position: relative; z-index: 1; }
 .article-card-meta { align-items: center; color: var(--muted); display: flex; font-size: 11px; font-weight: 700; gap: 20px; justify-content: space-between; margin-top: 24px; position: relative; z-index: 1; }
-.article-card-meta span { color: var(--pink); font-weight: 900; }
+.article-card-meta > span:not(.blog-dates) { color: var(--pink); font-weight: 900; }
 .recommended-card .round-arrow, .latest-card .round-arrow { bottom: 18px; position: absolute; right: 18px; z-index: 1; }
 .recommended-card:hover .round-arrow, .latest-card:hover .round-arrow { background: var(--pink); color: white; transform: rotate(-35deg); }
 .latest-section { border-bottom: 0; }

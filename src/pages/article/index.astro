@@ -1,6 +1,8 @@
 ---
+import BlogDates from '../../components/BlogDates.astro';
 import LanguageSwitch from '../../components/LanguageSwitch.astro';
 
+import { blogDate as formatDate, blogUpdatedAt } from '../../data/blog-dates';
 import { blogTagLabel } from '../../data/blog-tags';
 import { blogPreview } from '../../data/blog-preview';
 import { buildSourceReadingSection, sourceReadingPath } from '../../data/source-reading';
@@ -20,14 +22,12 @@ const leadEnglish = englishPosts.find(post => post.id === recommendedPosts[0]?.i
 const leadEnglishPreview = await blogPreview(leadEnglish?.body ?? '');
 const unrealArticleCount = unrealCpp.length + gameplaySystems.length;
 const totalArticleCount = blogPosts.length + unrealArticleCount;
-const latestPublishedAt = blogPosts[0]?.data.publishedAt;
-const sourceReading = buildSourceReadingSection(blogPosts);
+const latestUpdatedAt = blogPosts.reduce<Date | undefined>((latest, post) => {
+  const updatedAt = blogUpdatedAt(post);
 
-const formatDate = (date: Date) => date.toLocaleDateString('zh-CN', {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-});
+  return !latest || updatedAt > latest ? updatedAt : latest;
+}, undefined);
+const sourceReading = buildSourceReadingSection(blogPosts);
 
 const postDescription = (description: string) =>
   description || '一篇关于 Unreal Engine、C++ 与游戏开发实践的学习记录。';
@@ -65,7 +65,7 @@ const postDescription = (description: string) =>
         </div>
         <dl class="article-stats">
           <div><dt>已收录</dt><dd>{totalArticleCount}<small>篇</small></dd></div>
-          <div><dt>最近更新</dt><dd class="article-stat-date">{latestPublishedAt ? <time datetime={latestPublishedAt.toISOString()}>{formatDate(latestPublishedAt)}</time> : '持续整理中'}</dd></div>
+          <div><dt>最近更新</dt><dd class="article-stat-date">{latestUpdatedAt ? <time datetime={latestUpdatedAt.toISOString()}>{formatDate(latestUpdatedAt)}</time> : '持续整理中'}</dd></div>
         </dl>
         <span class="article-hero-mark" aria-hidden="true">ARTICLES ↗</span>
       </section>
@@ -134,7 +134,7 @@ const postDescription = (description: string) =>
                   </div>
                 ) : <p class="article-card-description">{postDescription(post.data.description)}</p>}
                 <div class="article-card-meta">
-                  <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+                  <BlogDates post={post} />
                   <span>阅读全文 ↗</span>
                 </div>
                 <span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span>
@@ -159,7 +159,7 @@ const postDescription = (description: string) =>
                 <h3>{post.data.title}</h3>
                 <p class="article-card-description">{postDescription(post.data.description)}</p>
                 <div class="article-card-meta">
-                  <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+                  <BlogDates post={post} />
                   <span>阅读全文 ↗</span>
                 </div>
                 <span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span>

@@ -1,0 +1,16 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { blogDate, blogHasUpdate, blogUpdatedAt } from '../data/blog-dates';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+
+const updatedAt = blogUpdatedAt(post);
+---
+<span class="blog-dates">
+  <span data-i18n-en="Published">发布于</span> <time datetime={post.data.publishedAt.toISOString()}>{blogDate(post.data.publishedAt)}</time>
+  {blogHasUpdate(post) && <> · <span data-i18n-en="Updated">更新于</span> <time datetime={updatedAt.toISOString()}>{blogDate(updatedAt)}</time></>}
+</span>
