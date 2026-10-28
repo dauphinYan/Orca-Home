@@ -4,7 +4,8 @@ description: "梳理 GAS 中 AbilityTask 的创建、激活、结束与 GC 回�
 publishedAt: 2026-09-12
 tags:
     - Unreal Engine
-    - GAS
+    - source-reading
+    - Ability System
     - AbilityTask
 draft: true
 ---

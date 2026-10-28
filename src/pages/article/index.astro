@@ -1,25 +1,21 @@
 ---
+import Icon from '../../components/Icon.astro';
 import BlogDates from '../../components/BlogDates.astro';
+import { blogTagLabel } from '../../data/blog-tags';
+import ArticleListRow from '../../components/ArticleListRow.astro';
 import LanguageSwitch from '../../components/LanguageSwitch.astro';
 
 import { blogDate as formatDate, blogUpdatedAt } from '../../data/blog-dates';
-import { blogTagLabel } from '../../data/blog-tags';
-import { blogPreview } from '../../data/blog-preview';
-import { buildSourceReadingSection, sourceReadingPath } from '../../data/source-reading';
+import { buildSourceReadingSection, sourceReadingHighlights, sourceReadingPath } from '../../data/source-reading';
 import '../../styles/global.css';
 import '../../styles/article-index.css';
-import Icon from '../../components/Icon.astro';
+import '../../styles/article-overview.css';
 import { getCollection } from 'astro:content';
 
 const blogPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 const unrealCpp = await getCollection('unrealCpp', ({ data }) => !data.draft);
 const gameplaySystems = await getCollection('gameplaySystems', ({ data }) => !data.draft);
-const recommendedPosts = blogPosts.slice(0, 3);
-const leadPreview = await blogPreview(recommendedPosts[0]?.body ?? '');
-const englishPosts = await getCollection('blogEnglish', ({ data }) => !data.draft);
-const leadEnglish = englishPosts.find(post => post.id === recommendedPosts[0]?.id);
-const leadEnglishPreview = await blogPreview(leadEnglish?.body ?? '');
 const unrealArticleCount = unrealCpp.length + gameplaySystems.length;
 const totalArticleCount = blogPosts.length + unrealArticleCount;
 const latestUpdatedAt = blogPosts.reduce<Date | undefined>((latest, post) => {
@@ -29,8 +25,7 @@ const latestUpdatedAt = blogPosts.reduce<Date | undefined>((latest, post) => {
 }, undefined);
 const sourceReading = buildSourceReadingSection(blogPosts);
 
-const postDescription = (description: string) =>
-  description || '一篇关于 Unreal Engine、C++ 与游戏开发实践的学习记录。';
+const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -56,18 +51,28 @@ const postDescription = (description: string) =>
       </div>
     </header>
 
-    <main class="article-index">
-      <section class="article-hero" aria-labelledby="article-page-title">
-        <div>
-          <p class="article-kicker">WRITING / NOTES / DEVELOPMENT</p>
-          <h1 id="article-page-title">文章<span>′</span></h1>
-          <p class="article-hero-copy">开发记录、技术整理，以及关于游戏创作的思考。</p>
+    <main class="article-index article-overview">
+      <section class="overview-hero" aria-labelledby="article-page-title">
+        <div class="overview-intro">
+          <h1 id="article-page-title">文章<span aria-hidden="true">′</span></h1>
+          <p>Unreal Engine 源码解读与游戏开发实践</p>
         </div>
-        <dl class="article-stats">
-          <div><dt>已收录</dt><dd>{totalArticleCount}<small>篇</small></dd></div>
-          <div><dt>最近更新</dt><dd class="article-stat-date">{latestUpdatedAt ? <time datetime={latestUpdatedAt.toISOString()}>{formatDate(latestUpdatedAt)}</time> : '持续整理中'}</dd></div>
-        </dl>
-        <span class="article-hero-mark" aria-hidden="true">ARTICLES ↗</span>
+        <p class="overview-stats">
+          <span data-i18n-en={`${totalArticleCount} articles`}>共 {totalArticleCount} 篇文章</span>
+          {latestUpdatedAt && <span><span>最近更新</span> <time datetime={latestUpdatedAt.toISOString()}>{formatDate(latestUpdatedAt)}</time></span>}
+        </p>
+      </section>
+
+      <section class="overview-section" aria-labelledby="recommended-title">
+        <div class="overview-section-heading">
+          <h2 id="recommended-title">推荐阅读</h2>
+          <a href={sourceReadingPath}>查看全部源码解读 ↗</a>
+        </div>
+        {highlightedPosts.length > 0 ? (
+          <ul class="article-list">
+            {highlightedPosts.map(post => <ArticleListRow post={post} />)}
+          </ul>
+        ) : <p class="article-empty">源码解读文章正在整理中。</p>}
       </section>
 
       <section class="article-section" aria-labelledby="featured-sections-title">
@@ -76,19 +81,6 @@ const postDescription = (description: string) =>
           <h2 id="featured-sections-title">专题专区</h2>
         </div>
         <div class="featured-sections-grid">
-          <a class="featured-section-card" href="/article/unreal-engine/">
-            <div class="featured-section-copy">
-              <p class="featured-section-label">UNREAL ENGINE 5.8 / OFFICIAL DOCS GUIDE</p>
-              <h3>虚幻引擎官方文档<br />中文专区</h3>
-              <p>以官方文档目录为骨架，用中文导读串起 C++ 编程与游戏性系统的关键概念。</p>
-            </div>
-            <div class="featured-section-meta">
-              <span data-i18n-en={`${unrealArticleCount} Chinese guides published`}>已收录 {unrealArticleCount} 篇导读</span>
-              <strong>进入专区 ↗</strong>
-            </div>
-            <span class="featured-section-stamp">专区</span>
-            <span class="featured-section-code" aria-hidden="true">UE<br />5.8</span>
-          </a>
           <a class="featured-section-card featured-section-card--source" href={sourceReadingPath}>
             <div class="featured-section-copy">
               <p class="featured-section-label">UNREAL ENGINE / SOURCE READING</p>
@@ -103,47 +95,20 @@ const postDescription = (description: string) =>
             <span class="featured-section-stamp">专区</span>
             <span class="featured-section-code" aria-hidden="true">C++</span>
           </a>
+          <a class="featured-section-card" href="/article/unreal-engine/">
+            <div class="featured-section-copy">
+              <p class="featured-section-label">UNREAL ENGINE 5.8 / OFFICIAL DOCS GUIDE</p>
+              <h3>虚幻引擎官方文档<br />中文专区</h3>
+              <p>以官方文档目录为骨架，用中文导读串起 C++ 编程与游戏性系统的关键概念。</p>
+            </div>
+            <div class="featured-section-meta">
+              <span data-i18n-en={`${unrealArticleCount} Chinese guides published`}>已收录 {unrealArticleCount} 篇导读</span>
+              <strong>进入专区 ↗</strong>
+            </div>
+            <span class="featured-section-stamp">专区</span>
+            <span class="featured-section-code" aria-hidden="true">UE<br />5.8</span>
+          </a>
         </div>
-      </section>
-
-      <section class="article-section" aria-labelledby="recommended-title">
-        <div class="article-section-heading">
-          <p>RECOMMENDED</p>
-          <h2 id="recommended-title">推荐阅读</h2>
-        </div>
-        {recommendedPosts.length > 0 ? (
-          <div class:list={['recommended-grid', { 'recommended-grid--compact': recommendedPosts.length < 3 }]}>
-            {recommendedPosts.map((post, index) => (
-              <a class:list={['recommended-card', { 'recommended-card--lead': index === 0 }]} href={`/article/blog/${post.id}/`}>
-                <span class="recommended-number">{String(index + 1).padStart(2, '0')}</span>
-                <p class="article-card-label">{blogTagLabel(post.data.tags[0] ?? 'DEVLOG')}</p>
-                <h3>{post.data.title}</h3>
-                {index === 0 && leadPreview.length > 0 ? (
-                  <div class="recommended-preview">
-                    <p class="recommended-preview-label">正文预览</p>
-                    <div class="recommended-preview-content" data-language-content={leadEnglish ? 'zh-CN' : undefined} lang="zh-CN">
-                      {leadPreview.map(block => block.kind === 'heading'
-                        ? <p class="recommended-preview-heading">{block.text}</p>
-                        : <p>{block.text}</p>)}
-                    </div>
-                    {leadEnglish && <div class="recommended-preview-content" data-language-content="en" lang="en" hidden>
-                      {leadEnglishPreview.map(block => block.kind === 'heading'
-                        ? <p class="recommended-preview-heading">{block.text}</p>
-                        : <p>{block.text}</p>)}
-                    </div>}
-                  </div>
-                ) : <p class="article-card-description">{postDescription(post.data.description)}</p>}
-                <div class="article-card-meta">
-                  <BlogDates post={post} />
-                  <span>阅读全文 ↗</span>
-                </div>
-                <span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <p class="article-empty">推荐文章正在整理中。</p>
-        )}
       </section>
 
       <section class="article-section latest-section" aria-labelledby="latest-title">
@@ -157,7 +122,7 @@ const postDescription = (description: string) =>
               <a class="latest-card" href={`/article/blog/${post.id}/`}>
                 <p class="article-card-label">{post.data.tags.map(blogTagLabel).join(' / ') || 'DEVLOG'}</p>
                 <h3>{post.data.title}</h3>
-                <p class="article-card-description">{postDescription(post.data.description)}</p>
+                {post.data.description.trim() && <p class="article-card-description">{post.data.description}</p>}
                 <div class="article-card-meta">
                   <BlogDates post={post} />
                   <span>阅读全文 ↗</span>

@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BlogDates from './BlogDates.astro';
+import { sourceReadingTopics } from '../data/source-reading';
+import { blogTagLabel } from '../data/blog-tags';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+
+const topics = sourceReadingTopics(post).map(blogTagLabel).join(' / ') || 'Unreal Engine';
+---
+<li>
+  <a class="article-list-row" href={`/article/blog/${post.id}/`}>
+    <div class="article-list-copy">
+      <h3>{post.data.title}</h3>
+      {post.data.description.trim() && <p class="article-list-summary">{post.data.description}</p>}
+    </div>
+    <div class="article-list-meta">
+      <span class="article-list-topics">{topics}</span>
+      <BlogDates post={post} />
+    </div>
+  </a>
+</li>

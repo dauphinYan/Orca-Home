@@ -1,9 +1,16 @@
 import type { CollectionEntry } from 'astro:content';
 import { blogTagLabel } from './blog-tags';
+import { blogUpdatedAt } from './blog-dates';
 
 export const sourceReadingPath = '/article/unreal-engine/source-reading/';
 
 export const sourceReadingTag = 'source-reading';
+
+export function sourceReadingHighlights(articles: CollectionEntry<'blog'>[]) {
+  return [...articles]
+    .sort((a, b) => blogUpdatedAt(b).getTime() - blogUpdatedAt(a).getTime())
+    .slice(0, 5);
+}
 
 export function sourceReadingTopics(post: CollectionEntry<'blog'>) {
   return [...new Set(post.data.tags.map(tag => tag.trim()))]
