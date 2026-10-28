@@ -1,11 +1,12 @@
 ---
-title: "文章标题"
-description: "用一句话说明文章内容，首页卡片会显示这段文字。"
+title: "Unreal Header Tool 源码解读"
+description: ""
 publishedAt: 2026-10-28
 tags: ["Unreal Engine","source-reading", "Reflection", "UHT"]
 draft: false
 ---
 
+本文仅作为个人在学习过程中的记录，如有错误，欢迎指出！
 
 ## UE C++ 项目构建流程
 
