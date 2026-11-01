@@ -23,10 +23,6 @@ export function initMediaViewer() {
 
   const content = dialog.querySelector<HTMLElement>('[data-viewer-content]')!;
 
-  const title = dialog.querySelector<HTMLElement>('[data-viewer-title]')!;
-
-  const output = dialog.querySelector<HTMLOutputElement>('[data-viewer-scale]')!;
-
   let scale = 1;
 
   let offset = { x: 0, y: 0 };
@@ -39,7 +35,6 @@ export function initMediaViewer() {
 
   const update = () => {
     content.style.transform = `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
-    output.value = `${Math.round(scale * 100)}%`;
   };
 
   const reset = () => {
@@ -100,7 +95,6 @@ export function initMediaViewer() {
     }
 
     trigger = element;
-    title.textContent = media.getAttribute('alt') || element.getAttribute('aria-label') || localize('放大查看', 'Enlarge');
     content.replaceChildren(clone);
     reset();
     previousOverflow = document.documentElement.style.overflow;
@@ -135,15 +129,7 @@ export function initMediaViewer() {
     else zoom(event.key === '-' ? 1 / 1.25 : 1.25);
   });
 
-  dialog.querySelectorAll<HTMLButtonElement>('[data-viewer-action]').forEach(button => {
-    button.addEventListener('click', () => {
-      const action = button.dataset.viewerAction;
-
-      if (action === 'close') dialog.close();
-      else if (action === 'fit') reset();
-      else zoom(action === 'in' ? 1.25 : 1 / 1.25);
-    });
-  });
+  dialog.querySelector<HTMLButtonElement>('[data-viewer-action="close"]')!.addEventListener('click', () => dialog.close());
 
   stage.addEventListener('wheel', event => {
     event.preventDefault();
