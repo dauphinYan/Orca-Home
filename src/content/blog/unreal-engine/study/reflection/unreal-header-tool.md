@@ -18,7 +18,7 @@ UHT 解析参与反射的头文件
 
 C++ 编译器编译手写代码与生成代码
 
-链接为模块，加载后通过注册机制接入对象系统
+将编译产物链接为模块，加载后通过注册机制接入对象系统
 
 ## 常见宏
 
@@ -135,5 +135,39 @@ classObj.Outer?.AddChild(classObj);
 topScope.HeaderParser.ParseStatements('{', '}', true);
 ```
 
-## generated.h 必要的声明
+## generated.h 补上必要的声明
 
+GENERATED_BODY() 的作用，可以简单理解为在编译时，把反射需要用到的方法声明补到这个位置。
+
+例如：
+
+```cpp
+class UCurveFloat : public UCurveBase
+{
+    GENERATED_BODY()
+
+    FRichCurve FloatCurve;
+    float GetFloatValue(float InTime) const;
+};
+```
+
+通过宏展开，大致会变为：
+
+```cpp
+class UCurveFloat : public UCurveBase
+{
+    static UClass* StaticClass();
+    static void execGetFloatValue();
+    // 还有注册、构造等辅助内容。
+
+    FRichCurve FloatCurve;
+    float GetFloatValue(float InTime) const;
+};
+```
+
+这些内容由 UHT 提前写进 generated.h，类内的生成宏负责把对应的内容展开在这里。
+
+## gen.cpp
+
+- 描述参数，告诉 UE 这个类有哪些属性、函数，以及它们的类型和布局。
+- 执行和注册代码，把描述建起来，并把反射调用接到 C++ 函数上。
