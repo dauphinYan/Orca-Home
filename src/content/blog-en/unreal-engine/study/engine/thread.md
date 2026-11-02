@@ -2,7 +2,7 @@
 title: "Multithreading in Game Engines: Thread Roles, Task Systems, and Synchronization"
 description: ""
 publishedAt: 2026-10-11
-tags: ["Unreal Engine","Thread","source-reading"]
+tags: ["Unreal Engine","Thread","Source Reading"]
 draft: false
 ---
 

@@ -4,21 +4,25 @@ import { blogUpdatedAt } from './blog-dates';
 
 export const sourceReadingPath = '/article/unreal-engine/source-reading/';
 
-export const sourceReadingTag = 'source-reading';
+const sourceReadingTags = new Set(['源码解读', 'Source Reading']);
 
-export function sourceReadingHighlights(articles: CollectionEntry<'blog'>[]) {
+type BlogPost = CollectionEntry<'blog' | 'blogEnglish'>;
+
+export function sourceReadingHighlights<T extends BlogPost>(articles: T[]) {
   return [...articles]
     .sort((a, b) => blogUpdatedAt(b).getTime() - blogUpdatedAt(a).getTime())
     .slice(0, 5);
 }
 
-export function sourceReadingTopics(post: CollectionEntry<'blog'>) {
+export function sourceReadingTopics(post: BlogPost) {
   return [...new Set(post.data.tags.map(tag => tag.trim()))]
-    .filter(tag => tag && tag !== sourceReadingTag && tag !== 'Unreal Engine');
+    .filter(tag => tag && !sourceReadingTags.has(tag) && tag !== 'Unreal Engine');
 }
 
-export function buildSourceReadingSection(posts: CollectionEntry<'blog'>[]) {
-  const articles = posts.filter(post => !post.data.draft && post.data.tags.some(tag => tag.trim() === sourceReadingTag))
+export function buildSourceReadingSection<T extends BlogPost>(posts: T[], language: 'zh' | 'en' = 'zh') {
+  const collection = language === 'en' ? 'blogEnglish' : 'blog';
+
+  const articles = posts.filter(post => post.collection === collection && !post.data.draft && post.data.tags.some(tag => sourceReadingTags.has(tag.trim())))
     .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
   const counts = new Map<string, number>();

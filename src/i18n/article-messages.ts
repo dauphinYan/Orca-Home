@@ -8,7 +8,7 @@ export const articleMessages: Record<string, string> = {
   '← 返回首页': '← Back to home',
   '← 返回文章列表': '← Back to articles',
   '文章标签': 'Article tags',
-  '源码解读': 'Source Analysis',
+  '源码解读': 'Source Reading',
   'Unreal Engine 源码解读与游戏开发实践': 'Unreal Engine source analysis and game development',
   '查看全部源码解读 ↗': 'All source articles ↗',
   '反射模型与核心类型': 'Reflection Model and Core Types',

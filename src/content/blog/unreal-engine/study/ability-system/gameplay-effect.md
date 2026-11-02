@@ -2,7 +2,7 @@
 title: "GameplayEffect—定义、应用参数、上下文与属性捕获"
 description: ""
 publishedAt: 2026-10-14
-tags: ["Unreal Engine","Ability System","source-reading"]
+tags: ["Unreal Engine","Ability System","源码解读"]
 draft: false
 ---
 

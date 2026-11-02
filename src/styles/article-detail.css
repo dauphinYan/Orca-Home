@@ -39,7 +39,7 @@ html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body table { border-collapse: collapse; display: block; font-size: 15px; margin: 26px 0 30px; max-width: 100%; overflow-x: auto; white-space: nowrap; width: max-content; }
 .article-body th, .article-body td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
 .article-body th { background: var(--code-bg); color: var(--ink); font-weight: 900; }
-.article-body img { border: 1px solid var(--line); display: block; height: auto; margin: 28px auto; max-width: 100%; }
+.article-body img { display: block; height: auto; margin: 28px auto; max-width: 100%; }
 .article-body figure { margin: 28px 0; }
 .article-body .mermaid-diagram { background: var(--code-bg); border: 1px solid var(--code-line); border-radius: 4px; padding: 20px; }
 .mermaid-diagram-canvas { overflow-x: auto; text-align: center; }

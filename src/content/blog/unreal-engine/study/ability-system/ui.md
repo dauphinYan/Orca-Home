@@ -2,7 +2,7 @@
 title: "GAS 中的 UI 观察、配置资源"
 description: "本文介绍 Gameplay Ability System 中 UI 所应承担的职责。"
 publishedAt: 2026-10-22
-tags: ["Unreal Engine","Ability System","source-reading"]
+tags: ["Unreal Engine","Ability System","源码解读"]
 draft: false
 ---
 

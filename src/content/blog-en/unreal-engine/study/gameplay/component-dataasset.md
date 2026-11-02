@@ -4,6 +4,7 @@ description: ""
 publishedAt: 2026-10-08
 tags:
   - Unreal Engine
+  - Source Reading
   - Gameplay
   - Component
   - DataAsset

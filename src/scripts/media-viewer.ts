@@ -23,6 +23,10 @@ export function initMediaViewer() {
 
   const content = dialog.querySelector<HTMLElement>('[data-viewer-content]')!;
 
+  const fullscreenButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="fullscreen"]')!;
+
+  let mediaSize = { width: 1, height: 1 };
+
   let scale = 1;
 
   let offset = { x: 0, y: 0 };
@@ -38,6 +42,10 @@ export function initMediaViewer() {
   };
 
   const reset = () => {
+    const fit = Math.min(stage.clientWidth * 0.8 / mediaSize.width, stage.clientHeight * 0.8 / mediaSize.height);
+
+    content.style.width = `${mediaSize.width * fit}px`;
+    content.style.height = `${mediaSize.height * fit}px`;
     scale = 1;
     offset = { x: 0, y: 0 };
     update();
@@ -71,10 +79,23 @@ export function initMediaViewer() {
       clone.removeAttribute('sizes');
       clone.src = media.currentSrc || media.src;
       clone.loading = 'eager';
+      mediaSize = { width: media.naturalWidth || media.width || 1, height: media.naturalHeight || media.height || 1 };
+      clone.addEventListener('load', () => {
+        if (content.firstElementChild !== clone) return;
+        mediaSize = { width: clone.naturalWidth, height: clone.naturalHeight };
+        reset();
+      }, { once: true });
     }
 
     // SVG IDs and references must stay together and distinct from the inline diagram.
     if (clone instanceof SVGSVGElement) {
+      const viewBox = clone.viewBox.baseVal;
+
+      const bounds = media.getBoundingClientRect();
+
+      mediaSize = { width: viewBox.width || bounds.width || 1, height: viewBox.height || bounds.height || 1 };
+      clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
       const ids = [clone, ...clone.querySelectorAll('[id]')].map(node => node.id).filter(Boolean).sort((a, b) => b.length - a.length);
 
       const references = new RegExp(`#(${ids.map(id => id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?![\\w-])`, 'g');
@@ -96,10 +117,10 @@ export function initMediaViewer() {
 
     trigger = element;
     content.replaceChildren(clone);
-    reset();
     previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
     dialog.showModal();
+    reset();
   };
 
   document.querySelectorAll<HTMLElement>('.article-body img, .screenshot-button').forEach(element => {
@@ -131,6 +152,27 @@ export function initMediaViewer() {
 
   dialog.querySelector<HTMLButtonElement>('[data-viewer-action="close"]')!.addEventListener('click', () => dialog.close());
 
+  fullscreenButton.hidden = !document.fullscreenEnabled;
+  fullscreenButton.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement === dialog) await document.exitFullscreen();
+      else await dialog.requestFullscreen();
+    } catch {
+      // Keep the viewport viewer available when the browser declines fullscreen.
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    const active = document.fullscreenElement === dialog;
+
+    const label = active ? localize('退出全屏', 'Exit fullscreen') : localize('全屏查看', 'View fullscreen');
+
+    fullscreenButton.setAttribute('aria-pressed', String(active));
+    fullscreenButton.setAttribute('aria-label', label);
+    fullscreenButton.title = label;
+    if (dialog.open) reset();
+  });
+
   stage.addEventListener('wheel', event => {
     event.preventDefault();
     const bounds = stage.getBoundingClientRect();
@@ -140,6 +182,10 @@ export function initMediaViewer() {
 
   stage.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
+    if (event.target === stage) {
+      dialog.close();
+      return;
+    }
     event.preventDefault();
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
     stage.setPointerCapture(event.pointerId);
@@ -167,6 +213,7 @@ export function initMediaViewer() {
   });
 
   dialog.addEventListener('close', () => {
+    if (document.fullscreenElement === dialog) void document.exitFullscreen();
     document.documentElement.style.overflow = previousOverflow;
     content.replaceChildren();
     trigger?.focus({ preventScroll: true });

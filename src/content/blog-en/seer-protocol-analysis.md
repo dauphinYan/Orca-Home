@@ -3,8 +3,8 @@ title: "Seer Communication Protocol Analysis: Source Reading and Hook Injection"
 description: "A learning journal about the Flash client, network packet boundaries, and TCP stream processing."
 publishedAt: 2026-09-10
 tags:
-  - 逆向工程
-  - 网络通信
+  - Reverse Engineering
+  - Network Communication
   - C++
 ---
 

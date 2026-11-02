@@ -40,7 +40,7 @@ export default {
     '按官方目录整理的 UE 5.8 中文学习导读，已收录 C++ 与游戏性系统内容。': 'Chinese study guides for UE 5.8, organized by the official documentation, covering C++ and gameplay systems.',
     '进入专区 ↗': 'Explore guides ↗',
     '阅读全文 ↗': 'Read article ↗',
-    '源码解读': 'Source Code Analysis',
+    '源码解读': 'Source Reading',
     'ASC——状态归属、初始化与 Avatar 生命周期': 'ASC: State Ownership, Initialization, and the Avatar Lifecycle',
     'GameplayEffect—定义、应用参数、上下文与属性捕获': 'GameplayEffect: Definitions, Application Parameters, Context, and Attribute Capture',
     '游戏引擎多线程——线程分工、任务系统与同步': 'Game Engine Multithreading: Thread Roles, Task Systems, and Synchronization',

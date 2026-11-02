@@ -2,7 +2,7 @@
 title: "GameplayEffect: Definitions, Application Parameters, Context, and Attribute Capture"
 description: ""
 publishedAt: 2026-10-14
-tags: ["Unreal Engine","Ability System","source-reading"]
+tags: ["Unreal Engine","Ability System","Source Reading"]
 draft: false
 ---
 
