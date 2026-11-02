@@ -12,7 +12,7 @@ function getModifiedDates() {
   // Read history once per build, with NUL separators for paths containing spaces.
   const history = execFileSync('git', [
     'log', '--format=commit:%ct', '--name-only', '-z', '--no-renames',
-    '--', 'src/content/blog', 'src/content/blog-en',
+    '--', 'src/content/blog',
   ], { cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
 
   const dates = new Map<string, Date>();
@@ -34,7 +34,7 @@ function getModifiedDates() {
   return dates;
 }
 
-export function blogUpdatedAt(post: CollectionEntry<'blog' | 'blogEnglish'>): Date {
+export function blogUpdatedAt(post: CollectionEntry<'blog'>): Date {
   if (!post.filePath) return post.data.publishedAt;
 
   const path = relative(root, resolve(root, post.filePath)).replaceAll('\\', '/');
@@ -53,6 +53,6 @@ export function blogDate(date: Date): string {
   return dateFormatter.format(date);
 }
 
-export function blogHasUpdate(post: CollectionEntry<'blog' | 'blogEnglish'>): boolean {
+export function blogHasUpdate(post: CollectionEntry<'blog'>): boolean {
   return blogDate(blogUpdatedAt(post)) !== blogDate(post.data.publishedAt);
 }

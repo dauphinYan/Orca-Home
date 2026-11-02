@@ -14,11 +14,6 @@ const blog = defineCollection({
   schema: blogSchema,
 });
 
-const blogEnglish = defineCollection({
-  loader: glob({ base: './src/content/blog-en', pattern: '**/*.md' }),
-  schema: blogSchema,
-});
-
 const unrealDocSchema = z.object({
   title: z.string(),
   description: z.string(),
@@ -41,4 +36,4 @@ const gameplaySystems = defineCollection({
   schema: unrealDocSchema,
 });
 
-export const collections = { blog, blogEnglish, unrealCpp, gameplaySystems };
+export const collections = { blog, unrealCpp, gameplaySystems };

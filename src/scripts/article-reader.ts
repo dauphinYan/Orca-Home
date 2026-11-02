@@ -7,24 +7,6 @@ export function initArticleReader() {
   initArticleSidebarToggles();
   initArticleFooterClearance();
 
-  // Keep IDs unique when both language versions contain the same technical heading.
-  document.querySelectorAll<HTMLElement>('.article-body[data-language-content="en"]').forEach(body => {
-    const ids = new Map<string, string>();
-
-    body.querySelectorAll<HTMLElement>('[id]').forEach(element => {
-      const original = element.id;
-
-      element.id = `en-${original}`;
-      ids.set(original, element.id);
-    });
-
-    body.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
-      const id = decodeURIComponent(link.hash.slice(1));
-
-      if (ids.has(id)) link.hash = ids.get(id)!;
-    });
-  });
-
   const backToTop = document.querySelector('[data-back-to-top]');
   if (backToTop instanceof HTMLButtonElement) {
     const update = () => { backToTop.hidden = window.scrollY < window.innerHeight; };

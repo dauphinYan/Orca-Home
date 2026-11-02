@@ -15,8 +15,8 @@ const topics = sourceReadingTopics(post).map(blogTagLabel).join(' / ') || 'Unrea
 <li>
   <a class="article-list-row" href={`/article/blog/${post.id}/`}>
     <div class="article-list-copy">
-      <h3>{post.data.title}</h3>
-      {post.data.description.trim() && <p class="article-list-summary">{post.data.description}</p>}
+      <h3 lang="zh-CN" data-i18n-ignore>{post.data.title}</h3>
+      {post.data.description.trim() && <p class="article-list-summary" lang="zh-CN" data-i18n-ignore>{post.data.description}</p>}
     </div>
     <div class="article-list-meta">
       <span class="article-list-topics">{topics}</span>

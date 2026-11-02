@@ -48,8 +48,8 @@ const navigationTree = buildUnrealDocsTree(await getCollection('unrealCpp'), awa
           <div class="knowledge-cards" data-knowledge-cards>
             {articles.map(article => <article class="knowledge-card" data-knowledge-card data-search={`${article.data.title} ${article.data.description} ${article.body}`}>
               <p>{article.section} · UE {article.data.engineVersion} · 已核对 {article.data.reviewedAt.toLocaleDateString('zh-CN')}</p>
-              <h2><a href={article.href}>{article.data.title}</a></h2>
-              <p class="knowledge-card-description">{article.data.description}</p>
+              <h2 lang="zh-CN" data-i18n-ignore><a href={article.href}>{article.data.title}</a></h2>
+              <p class="knowledge-card-description" lang="zh-CN" data-i18n-ignore>{article.data.description}</p>
               <div><span>{article.data.tags.join(' · ')}</span><a href={article.href}>阅读导读 ↗</a></div>
             </article>)}
           </div>

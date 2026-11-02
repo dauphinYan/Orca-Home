@@ -1,5 +1,3 @@
-import { getCollection } from 'astro:content';
-import { blogTagLabel } from '../data/blog-tags';
 import { articleMessages } from './article-messages';
 
 export interface PageTranslationConfig {
@@ -26,48 +24,7 @@ export async function getPageTranslations(path: string) {
 
   const configured = pages.get(pathname);
 
-  const blogPage = pathname.startsWith('/article/blog/');
+  if (pathname.startsWith('/article/')) return { ...articleMessages, ...configured };
 
-  const articleIndex = pathname === '/article' || pathname === '/article/unreal-engine/source-reading';
-
-  if (!blogPage && (!articleIndex || !configured)) return configured;
-
-  const englishPosts = await getCollection('blogEnglish', ({ data }) => !data.draft);
-
-  const currentPost = englishPosts.find(post => pathname === `/article/blog/${post.id}`);
-
-  if (blogPage && !currentPost) return configured;
-
-  const messages = { ...articleMessages, ...configured };
-
-  const originals = await getCollection('blog', ({ data }) => !data.draft);
-
-  for (const original of originals) {
-    const translated = englishPosts.find(post => post.id === original.id);
-
-    if (!translated) continue;
-
-    messages[original.data.title] = translated.data.title;
-    messages[`${original.data.title} - Orca丶的博客`] = `${translated.data.title} — Orca丶's Blog`;
-    messages[`阅读：${original.data.title}`] = `Read: ${translated.data.title}`;
-
-    if (original.data.description) messages[original.data.description] = translated.data.description;
-
-    const labels = original.data.tags.map(blogTagLabel);
-
-    messages[labels.join(' / ')] = labels.map(label => articleMessages[label] ?? label).join(' / ');
-
-    const date = original.data.publishedAt;
-
-    const zhDate = date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    const enDate = date.toLocaleDateString('en', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    const tag = blogTagLabel(original.data.tags[0] ?? 'DEVLOG');
-
-    messages[`${tag} / ${zhDate}`] = `${articleMessages[tag] ?? tag} / ${enDate}`;
-  }
-
-  return messages;
+  return configured;
 }
-

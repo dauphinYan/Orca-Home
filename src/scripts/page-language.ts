@@ -27,7 +27,7 @@ export function initPageLanguage() {
   while (walker.nextNode()) {
     const node = walker.currentNode as Text;
 
-    if (node.parentElement?.closest('script, style, pre, code, [data-language-switch], [data-language-content], [data-i18n-en]')) continue;
+    if (node.parentElement?.closest('script, style, pre, code, [data-language-switch], [data-i18n-ignore], [data-i18n-en]')) continue;
 
     const original = node.data;
 
@@ -40,7 +40,7 @@ export function initPageLanguage() {
   const attributes: { element: Element; name: string; zh: string; en: string }[] = [];
 
   document.querySelectorAll('[aria-label], [alt], [title], [placeholder], meta[name="description"]').forEach(element => {
-    if (element.closest('[data-language-content]')) return;
+    if (element.closest('[data-i18n-ignore]')) return;
 
     for (const name of ['aria-label', 'alt', 'title', 'content', 'placeholder']) {
       const original = element.getAttribute(name);
@@ -53,13 +53,13 @@ export function initPageLanguage() {
 
   const chineseTitle = document.title;
 
-  const explicitTexts = [...document.querySelectorAll<HTMLElement>('[data-i18n-en]')].map(element => ({
-    element, zh: element.textContent ?? '', en: element.dataset.i18nEn!,
-  }));
+  const explicitTexts = [...document.querySelectorAll<HTMLElement>('[data-i18n-en]')]
+    .filter(element => !element.closest('[data-i18n-ignore]'))
+    .map(element => ({ element, zh: element.textContent ?? '', en: element.dataset.i18nEn! }));
 
-  const dates = [...document.querySelectorAll('time[datetime]')].map(element => ({
-    element, zh: element.textContent, date: new Date(element.getAttribute('datetime')!),
-  }));
+  const dates = [...document.querySelectorAll('time[datetime]')]
+    .filter(element => !element.closest('[data-i18n-ignore]'))
+    .map(element => ({ element, zh: element.textContent, date: new Date(element.getAttribute('datetime')!) }));
 
   let language = 'zh-CN';
 
@@ -77,10 +77,6 @@ export function initPageLanguage() {
 
     dates.forEach(({ element, zh, date }) => {
       element.textContent = english ? date.toLocaleDateString(language, { year: 'numeric', month: '2-digit', day: '2-digit' }) : zh;
-    });
-
-    document.querySelectorAll<HTMLElement>('[data-language-content]').forEach(element => {
-      element.hidden = element.dataset.languageContent !== language;
     });
 
     button.lang = english ? 'zh-CN' : 'en';
