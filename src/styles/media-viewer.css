@@ -6,9 +6,6 @@
 .media-viewer[open] { display: flex; align-items: center; justify-content: center; }
 
 .media-viewer-close { position: absolute; top: max(20px, env(safe-area-inset-top)); right: max(20px, env(safe-area-inset-right)); z-index: 1; display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: rgb(0 0 0 / 55%); color: #fff; box-shadow: none; font: 300 36px/1 sans-serif; cursor: pointer; }
-.media-viewer-fullscreen { right: calc(max(20px, env(safe-area-inset-right)) + 60px); }
-.media-viewer-fullscreen[hidden] { display: none; }
-.media-viewer:fullscreen { background: #171717; }
 .media-viewer-close:hover { background: rgb(0 0 0 / 80%); }
 .media-viewer-close:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 

@@ -23,8 +23,6 @@ export function initMediaViewer() {
 
   const content = dialog.querySelector<HTMLElement>('[data-viewer-content]')!;
 
-  const fullscreenButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="fullscreen"]')!;
-
   const zoomOutButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="zoom-out"]')!;
 
   const zoomInButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="zoom-in"]')!;
@@ -40,6 +38,8 @@ export function initMediaViewer() {
   const pointers = new Map<number, { x: number; y: number }>();
 
   let backgroundTap: { id: number; x: number; y: number } | undefined;
+
+  let closeOnBackgroundClick = false;
 
   let trigger: HTMLElement | undefined;
 
@@ -172,27 +172,6 @@ export function initMediaViewer() {
   zoomOutButton.addEventListener('click', () => zoom(1 / 1.25));
   zoomInButton.addEventListener('click', () => zoom(1.25));
 
-  fullscreenButton.hidden = !document.fullscreenEnabled;
-  fullscreenButton.addEventListener('click', async () => {
-    try {
-      if (document.fullscreenElement === dialog) await document.exitFullscreen();
-      else await dialog.requestFullscreen();
-    } catch {
-      // Keep the viewport viewer available when the browser declines fullscreen.
-    }
-  });
-
-  document.addEventListener('fullscreenchange', () => {
-    const active = document.fullscreenElement === dialog;
-
-    const label = active ? localize('退出全屏', 'Exit fullscreen') : localize('全屏查看', 'View fullscreen');
-
-    fullscreenButton.setAttribute('aria-pressed', String(active));
-    fullscreenButton.setAttribute('aria-label', label);
-    fullscreenButton.title = label;
-    if (dialog.open) reset();
-  });
-
   stage.addEventListener('wheel', event => {
     event.preventDefault();
     const bounds = stage.getBoundingClientRect();
@@ -201,6 +180,7 @@ export function initMediaViewer() {
   }, { passive: false });
 
   stage.addEventListener('pointerdown', event => {
+    closeOnBackgroundClick = false;
     if (event.button !== 0) return;
     event.preventDefault();
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -265,7 +245,17 @@ export function initMediaViewer() {
       && Math.hypot(event.clientX - backgroundTap.x, event.clientY - backgroundTap.y) <= 5;
 
     endPointer(event);
-    if (closeOnTap) dialog.close();
+    closeOnBackgroundClick = closeOnTap;
+  });
+
+  stage.addEventListener('click', event => {
+    if (!closeOnBackgroundClick) return;
+
+    closeOnBackgroundClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+    // Keep the overlay in place until click so the tap cannot reach the article below.
+    dialog.close();
   });
 
   stage.addEventListener('pointercancel', endPointer);
@@ -284,8 +274,8 @@ export function initMediaViewer() {
 
     pointers.clear();
     backgroundTap = undefined;
+    closeOnBackgroundClick = false;
     stage.classList.remove('is-dragging');
-    if (document.fullscreenElement === dialog) void document.exitFullscreen();
     document.documentElement.style.overflow = previousOverflow;
     content.replaceChildren();
     trigger?.focus({ preventScroll: true });
