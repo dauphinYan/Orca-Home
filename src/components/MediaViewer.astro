@@ -13,6 +13,19 @@ import '../styles/media-viewer.css';
     </svg>
   </button>
   <div class="media-viewer-stage" data-viewer-stage><div class="media-viewer-content" data-viewer-content></div></div>
+  <div class="media-viewer-zoom" role="group" aria-label="图片缩放">
+    <button type="button" data-viewer-action="zoom-out" aria-label="缩小图片" title="缩小图片">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+        <path d="M5 12h14" />
+      </svg>
+    </button>
+    <output class="media-viewer-scale" data-viewer-scale aria-label="缩放比例">100%</output>
+    <button type="button" data-viewer-action="zoom-in" aria-label="放大图片" title="放大图片">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+        <path d="M5 12h14M12 5v14" />
+      </svg>
+    </button>
+  </div>
 </dialog>
 <script>
   import { initMediaViewer } from '../scripts/media-viewer';

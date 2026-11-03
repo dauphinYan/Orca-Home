@@ -25,13 +25,21 @@ export function initMediaViewer() {
 
   const fullscreenButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="fullscreen"]')!;
 
+  const zoomOutButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="zoom-out"]')!;
+
+  const zoomInButton = dialog.querySelector<HTMLButtonElement>('[data-viewer-action="zoom-in"]')!;
+
+  const scaleOutput = dialog.querySelector<HTMLOutputElement>('[data-viewer-scale]')!;
+
   let mediaSize = { width: 1, height: 1 };
 
   let scale = 1;
 
   let offset = { x: 0, y: 0 };
 
-  let drag: { id: number; x: number; y: number } | undefined;
+  const pointers = new Map<number, { x: number; y: number }>();
+
+  let backgroundTap: { id: number; x: number; y: number } | undefined;
 
   let trigger: HTMLElement | undefined;
 
@@ -39,6 +47,9 @@ export function initMediaViewer() {
 
   const update = () => {
     content.style.transform = `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
+    scaleOutput.value = `${Math.round(scale * 100)}%`;
+    zoomOutButton.disabled = scale <= 0.25;
+    zoomInButton.disabled = scale >= 8;
   };
 
   const reset = () => {
@@ -67,6 +78,12 @@ export function initMediaViewer() {
     if (!media) return;
 
     const clone = media.cloneNode(true) as HTMLElement | SVGSVGElement;
+
+    const diagram = element.closest<HTMLElement>('.mermaid-diagram');
+
+    // Transparent images need an opaque surface; Mermaid keeps its rendered theme.
+    content.style.backgroundColor = diagram ? getComputedStyle(diagram).backgroundColor : '';
+    content.style.color = getComputedStyle(media).color;
 
     clone.removeAttribute('style');
     clone.removeAttribute('tabindex');
@@ -152,6 +169,9 @@ export function initMediaViewer() {
 
   dialog.querySelector<HTMLButtonElement>('[data-viewer-action="close"]')!.addEventListener('click', () => dialog.close());
 
+  zoomOutButton.addEventListener('click', () => zoom(1 / 1.25));
+  zoomInButton.addEventListener('click', () => zoom(1.25));
+
   fullscreenButton.hidden = !document.fullscreenEnabled;
   fullscreenButton.addEventListener('click', async () => {
     try {
@@ -182,29 +202,74 @@ export function initMediaViewer() {
 
   stage.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
-    if (event.target === stage) {
-      dialog.close();
-      return;
-    }
     event.preventDefault();
-    drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    backgroundTap = pointers.size === 1 && event.target === stage
+      ? { id: event.pointerId, x: event.clientX, y: event.clientY }
+      : undefined;
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('is-dragging');
   });
 
   stage.addEventListener('pointermove', event => {
-    if (!drag || drag.id !== event.pointerId) return;
-    offset.x += event.clientX - drag.x;
-    offset.y += event.clientY - drag.y;
-    drag.x = event.clientX;
-    drag.y = event.clientY;
+    const previous = pointers.get(event.pointerId);
+
+    if (!previous) return;
+    event.preventDefault();
+
+    if (backgroundTap && Math.hypot(event.clientX - backgroundTap.x, event.clientY - backgroundTap.y) > 5) {
+      backgroundTap = undefined;
+    }
+
+    const pair = [...pointers.values()].slice(0, 2);
+
+    const next = { x: event.clientX, y: event.clientY };
+
+    pointers.set(event.pointerId, next);
+
+    if (pair.length === 1) {
+      offset.x += next.x - previous.x;
+      offset.y += next.y - previous.y;
+    } else if (pair.includes(previous)) {
+      const nextPair = [...pointers.values()].slice(0, 2);
+
+      const distance = Math.hypot(pair[1].x - pair[0].x, pair[1].y - pair[0].y);
+
+      const nextDistance = Math.hypot(nextPair[1].x - nextPair[0].x, nextPair[1].y - nextPair[0].y);
+
+      const center = { x: (pair[0].x + pair[1].x) / 2, y: (pair[0].y + pair[1].y) / 2 };
+
+      const nextCenter = { x: (nextPair[0].x + nextPair[1].x) / 2, y: (nextPair[0].y + nextPair[1].y) / 2 };
+
+      const bounds = stage.getBoundingClientRect();
+
+      if (distance > 0 && nextDistance > 0) {
+        zoom(nextDistance / distance, center.x - bounds.left - bounds.width / 2, center.y - bounds.top - bounds.height / 2);
+      }
+
+      offset.x += nextCenter.x - center.x;
+      offset.y += nextCenter.y - center.y;
+    }
+
     update();
   });
 
-  stage.addEventListener('lostpointercapture', () => {
-    drag = undefined;
-    stage.classList.remove('is-dragging');
+  const endPointer = (event: PointerEvent) => {
+    pointers.delete(event.pointerId);
+    backgroundTap = undefined;
+    stage.classList.toggle('is-dragging', pointers.size > 0);
+  };
+
+  stage.addEventListener('pointerup', event => {
+    const closeOnTap = backgroundTap?.id === event.pointerId
+      && Math.hypot(event.clientX - backgroundTap.x, event.clientY - backgroundTap.y) <= 5;
+
+    endPointer(event);
+    if (closeOnTap) dialog.close();
   });
+
+  stage.addEventListener('pointercancel', endPointer);
+  stage.addEventListener('lostpointercapture', endPointer);
 
   stage.addEventListener('dblclick', reset);
   window.addEventListener('resize', reset);
@@ -213,6 +278,13 @@ export function initMediaViewer() {
   });
 
   dialog.addEventListener('close', () => {
+    for (const id of pointers.keys()) {
+      if (stage.hasPointerCapture(id)) stage.releasePointerCapture(id);
+    }
+
+    pointers.clear();
+    backgroundTap = undefined;
+    stage.classList.remove('is-dragging');
     if (document.fullscreenElement === dialog) void document.exitFullscreen();
     document.documentElement.style.overflow = previousOverflow;
     content.replaceChildren();
