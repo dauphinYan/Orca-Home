@@ -1,6 +1,6 @@
 export const articleMessages: Record<string, string> = {
   '首页': 'Home',
-  '项目': 'Projects',
+  '作品': 'Works',
   '文章': 'Articles',
   '关于': 'About',
   '联系': 'Contact',

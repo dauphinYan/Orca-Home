@@ -4,7 +4,7 @@ export default {
   path: '/project/swordworld',
   messages: {
     '首页': 'Home',
-    '项目': 'Projects',
+    '作品': 'Works',
     '文章': 'Articles',
     '联系': 'Contact',
     '主导航': 'Main navigation',

@@ -17,7 +17,7 @@ const dialogId = `project-${project.key}`;
     <button class="close-dialog" type="button" aria-label="关闭详情" autofocus>×</button>
     <h2 id={`${dialogId}-title`}>{project.title}</h2>
     <p id={`${dialogId}-description`}>{project.description}</p>
-    <ul class="project-tags" aria-label="项目标签">{project.tags.map(tag => <li>{tag}</li>)}</ul>
+    <ul class="project-tags" aria-label="作品标签">{project.tags.map(tag => <li>{tag}</li>)}</ul>
   </dialog>}
 </article>
 <script>

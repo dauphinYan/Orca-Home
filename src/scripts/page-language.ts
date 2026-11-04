@@ -13,7 +13,7 @@ export function initPageLanguage() {
   // Keep navigation concise without shortening headings or other page copy.
   const navigationLabels: Record<string, string> = {
     '首页': 'Home',
-    '项目': 'Work',
+    '作品': 'Work',
     '文章': 'Blog',
     '关于': 'About',
     '联系': 'Contact',

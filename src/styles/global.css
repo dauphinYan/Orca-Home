@@ -68,14 +68,14 @@ h1{margin:0;line-height:1}
 .section-title h2 span{display:inline-block;color:var(--pink);font-size:54px;margin-left:7px;transform:rotate(20deg)}
 .section-title p{font-family:'Arial Black',Arial,sans-serif;font-style:italic;color:var(--muted);font-size:25px;font-weight:900;margin:4px 0 0 8px;line-height:1}
 .section-title b{position:absolute;left:72%;bottom:-16px;color:var(--lime);font-size:80px;line-height:1;transform:rotate(8deg)}
-.skill-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;flex:1}
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1}
 .skill-card{border:1px solid var(--line);border-radius:5px;height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;position:relative;overflow:hidden;transition:transform .2s,background .2s}
 .skill-card:after{content:'';position:absolute;inset:auto auto 0 0;width:65px;height:45px;background:radial-gradient(var(--dot) 1px,transparent 1.5px) 0 0/5px 5px;mask-image:linear-gradient(45deg,#000,transparent 65%)}
 .skill-card:nth-child(odd):before{content:'';position:absolute;top:0;right:0;width:60px;height:40px;background:radial-gradient(var(--dot) 1px,transparent 1.8px) 0 0/5px 5px;mask-image:linear-gradient(225deg,#000,transparent 65%)}
 .skill-card:hover{transform:translateY(-4px);background:var(--card-hover)}
 .skill-card svg{width:56px;height:56px}
 .skill-card h3{margin:0;font-size:20px;font-weight:700}
-.skill-logo{width:60px;height:60px;object-fit:contain}
+.skill-logo{display:block;width:60px;height:60px;object-fit:contain}
 .projects{padding-top:10px;padding-bottom:12px}
 .project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;flex:1}
 .project-card{position:relative;aspect-ratio:2.57;border:0;padding:0;border-radius:5px;overflow:hidden;cursor:pointer;background:var(--media);color:white;text-align:left;box-shadow:0 1px 3px var(--shadow)}
@@ -158,7 +158,7 @@ nav a{font-size:15px}
 .section-title h2 span{font-size:40px}
 .section-title p{font-size:17px}
  .section-title b{font-size:56px;bottom:-10px}
-.skill-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+.skill-grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .skill-card{height:105px}
 .skill-card svg{width:44px;height:44px}
 .skill-logo{width:47px;height:47px}
