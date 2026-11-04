@@ -18,6 +18,12 @@ const dialogId = `project-${project.key}`;
     <h2 id={`${dialogId}-title`}>{project.title}</h2>
     <p id={`${dialogId}-description`}>{project.description}</p>
     <ul class="project-tags" aria-label="作品标签">{project.tags.map(tag => <li>{tag}</li>)}</ul>
+    {project.links && <ul class="project-links">
+      {project.links.map(link => <li>
+        <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>
+        {link.password && <span><span>密码：</span><code>{link.password}</code></span>}
+      </li>)}
+    </ul>}
   </dialog>}
 </article>
 <script>

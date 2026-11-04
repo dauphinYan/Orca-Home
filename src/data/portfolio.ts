@@ -29,5 +29,9 @@ export const projects = [
     title: '赛尔号记牌器', key: 'seer', tags: ['逆向', 'QT'],
     description: '游戏辅助，通过抓取网络数据包，解析数据，实现对战信息记录，帮助新手玩家。',
     image: seerCover, href: null, status: '累计下载 3000+ 次',
+    links: [
+      { label: '下载', href: 'https://dauphinyan.lanzoub.com/b00b4xu1ef', password: 'hggz' },
+      { label: '学习文章', href: 'https://dolphindream.cn/article/blog/seer-protocol-analysis/', password: null },
+    ],
   },
 ];

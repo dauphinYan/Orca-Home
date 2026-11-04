@@ -21,6 +21,11 @@
 .project-dialog > p { font-size: 15px; line-height: 1.9; color: var(--muted); margin: 0 0 24px; }
 .project-tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .project-tags li { font-size: 12px; border: 1px solid var(--line); padding: 5px 9px; }
+.project-links { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px 24px; }
+.project-links li { display: flex; align-items: baseline; gap: 12px; white-space: nowrap; }
+.project-links a { text-decoration: underline; text-underline-offset: 4px; }
+.project-links span { color: var(--muted); font-size: 14px; }
+.project-links code { user-select: all; }
 body:has(.project-dialog[open]) { overflow: hidden; }
 .profile-bio { display: flex; align-items: center; gap: 22px; padding: 12px 0; }
 .avatar { border-radius: 50%; border: 3px solid var(--dialog-border); box-shadow: 5px 4px 0 var(--lime); flex-shrink: 0; }
