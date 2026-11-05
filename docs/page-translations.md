@@ -8,11 +8,11 @@
 import type { PageTranslationConfig } from '../pages';
 
 export default {
-  path: '/project/swordworld/',
+  path: '/project/lockknock/',
   messages: {
     '首页': 'Home',
     '游戏介绍': 'About the Game',
-    '剑与世界 · 游戏开发作品 — Orca丶': 'Sword World — Orca丶',
+    '洛克的迷宫': "Lock's Labyrinth",
   },
 } satisfies PageTranslationConfig;
 ```

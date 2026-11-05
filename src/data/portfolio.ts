@@ -1,3 +1,4 @@
+import swordCover from '../assets/projects/sword-world/screenshot-swordworld.webp?url';
 import lockCover from '../assets/projects/lock-knock/cover-horizontal.webp?url';
 import seerCover from '../assets/projects/seer-assistant/seer-assistant-screenshot.webp?url';
 import avatar from '../assets/profile/hinami-aoi.webp?url';
@@ -17,7 +18,7 @@ export const projects = [
   {
     title: '剑与世界', key: 'sword', tags: ['Unreal Engine 5.4', '单人开发', 'Boss 战'],
     description: '历时两个月，使用 Unreal Engine 5.4 单人开发，实现完整 Boss 战流程。',
-    image: null, href: '/project/swordworld/', status: '重点作品',
+    image: swordCover, href: 'https://my.feishu.cn/wiki/TDeIwEf2KiTYllkMu9ucVNFensh', status: '重点作品',
   },
   {
     title: '洛克的迷宫', key: 'lockknock',

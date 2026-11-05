@@ -7,7 +7,7 @@ const Tag = project.href ? 'a' : 'button';
 const dialogId = `project-${project.key}`;
 ---
 <article class={`portfolio-card ${project.key}`}>
-  <Tag class="project-media" href={project.href ?? undefined} type={project.href ? undefined : 'button'} data-project-dialog={project.href ? undefined : dialogId} aria-haspopup={project.href ? undefined : 'dialog'} aria-controls={project.href ? undefined : dialogId} aria-label={`查看${project.title}${project.href ? '专题页' : '详情'}`}>
+  <Tag class="project-media" href={project.href ?? undefined} type={project.href ? undefined : 'button'} data-project-dialog={project.href ? undefined : dialogId} aria-haspopup={project.href ? undefined : 'dialog'} aria-controls={project.href ? undefined : dialogId} aria-label={`查看${project.title}详情`}>
     {project.image ? <img src={project.image} alt="" loading="lazy" /> : <span class="work-in-progress" aria-hidden="true"><span class="world-orbit"></span></span>}
     {project.status && <span class="project-badge">{project.status}</span>}
     <h3 class="project-title">{project.title}</h3>
