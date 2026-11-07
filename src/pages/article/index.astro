@@ -1,12 +1,10 @@
 ---
-import Icon from '../../components/Icon.astro';
-import BlogDates from '../../components/BlogDates.astro';
 import { blogTagLabel } from '../../data/blog-tags';
 import ArticleListRow from '../../components/ArticleListRow.astro';
 import LanguageSwitch from '../../components/LanguageSwitch.astro';
 
 import { blogDate as formatDate, blogUpdatedAt } from '../../data/blog-dates';
-import { buildSourceReadingSection, sourceReadingHighlights, sourceReadingPath } from '../../data/source-reading';
+import { buildSourceReadingSection, sourceReadingHighlights, sourceReadingPath, sourceReadingTopics } from '../../data/source-reading';
 import '../../styles/global.css';
 import '../../styles/article-index.css';
 import '../../styles/article-overview.css';
@@ -70,7 +68,9 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
         </div>
         {highlightedPosts.length > 0 ? (
           <ul class="article-list">
-            {highlightedPosts.map(post => <ArticleListRow post={post} />)}
+            {highlightedPosts.map(post => (
+              <ArticleListRow post={post} topics={sourceReadingTopics(post).map(blogTagLabel).join(' / ') || 'Unreal Engine'} />
+            ))}
           </ul>
         ) : <p class="article-empty">源码解读文章正在整理中。</p>}
       </section>
@@ -117,20 +117,11 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
           <h2 id="latest-title">全部文章</h2>
         </div>
         {blogPosts.length > 0 ? (
-          <div class="latest-grid">
+          <ul class="article-list">
             {blogPosts.map(post => (
-              <a class="latest-card" href={`/article/blog/${post.id}/`}>
-                <p class="article-card-label">{post.data.tags.map(blogTagLabel).join(' / ') || 'DEVLOG'}</p>
-                <h3 lang="zh-CN" data-i18n-ignore>{post.data.title}</h3>
-                {post.data.description.trim() && <p class="article-card-description" lang="zh-CN" data-i18n-ignore>{post.data.description}</p>}
-                <div class="article-card-meta">
-                  <BlogDates post={post} />
-                  <span>阅读全文 ↗</span>
-                </div>
-                <span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span>
-              </a>
+              <ArticleListRow post={post} topics={post.data.tags.map(blogTagLabel).join(' / ') || 'DEVLOG'} />
             ))}
-          </div>
+          </ul>
         ) : (
           <p class="article-empty">第一篇文章正在准备中。</p>
         )}
