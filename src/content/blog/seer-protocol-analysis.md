@@ -1,7 +1,7 @@
 ---
 title: "赛尔号通信协议解析：源码解析与Hook注入"
 description: "一次围绕 Flash 客户端、网络封包边界和 TCP 数据流处理的学习记录。"
-publishedAt: 2026-09-10
+publishedAt: 2025-07-18
 tags:
   - 逆向工程
   - 网络通信
