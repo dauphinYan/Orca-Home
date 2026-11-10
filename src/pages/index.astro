@@ -33,7 +33,15 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
  <body class="page-with-paint-splashes">
    <header class="home-header"><div class="nav-inner"><nav aria-label="主导航"><a href="#home" class="active">首页</a><a href="#projects">作品</a><a href="/article/">文章</a><a href="#about">关于</a><a href="#contact">联系</a></nav><LanguageSwitch /></div></header>
   <main>
-   <section id="home" class="hero"><div class="hero-art" aria-hidden="true"></div><div class="hero-copy"><h1><span class="hello">你好，我是</span><span class="name">Orca丶</span></h1><p class="profession">Unreal Engine / C++ / 游戏开发</p><p class="tagline">把想法，变成可玩的世界。</p></div><span class="hero-spark" aria-hidden="true">✦</span></section>
+   <section id="home" class="hero">
+    <div class="hero-art" aria-hidden="true"></div>
+    <div class="hero-copy">
+     <h1><span class="hello">你好，我是</span><span class="name">Orca丶</span></h1>
+     <p class="hero-status">当前阶段：求职中</p>
+     <p class="hero-intent">意向：游戏客户端开发</p>
+    </div>
+    <span class="hero-spark" aria-hidden="true">✦</span>
+   </section>
     <section id="skills" class="content-row skills"><div class="section-title"><h2>技能<span>′</span></h2><p>SKILLS <b aria-hidden="true">↗</b></p></div><div class="skill-grid">{skills.map(skill => <div class="skill-card"><picture>{skill.darkImage && <source media="(prefers-color-scheme: dark)" srcset={skill.darkImage} />}<img class:list={['skill-logo', { 'skill-logo-unreal': skill.image === unrealIcon }]} src={skill.image} width="60" height="60" alt={`${skill.name} 图标`} /></picture><h3>{skill.name}</h3></div>)}</div></section>
     <section id="projects" class="content-row projects"><div class="section-title"><h2>作品展示<span>′</span></h2><p>WORKS <b aria-hidden="true">↗</b></p></div><div class="project-grid">{projects.map(project => <ProjectCard project={project} />)}</div></section>
      <section id="articles" class="content-row blog"><div class="section-title article-section-title"><div class="article-section-heading"><h2>文章<span>′</span></h2><p>ARTICLES <b aria-hidden="true">↗</b></p></div><a class="article-index-link" href="/article/">查看全部文章 ↗</a></div><div class="blog-grid">{blogPosts.slice(0, 4).map(post => <a class="blog-card blog-card-published" href={`/article/blog/${post.id}/`}><p class="blog-card-label">{blogTagLabel(post.data.tags[0] ?? 'DEVLOG')}</p><h3 lang="zh-CN" data-i18n-ignore>{post.data.title}</h3><p class="blog-card-description" lang="zh-CN" data-i18n-ignore>{post.data.description}</p><BlogDates post={post} /><span class="blog-card-read">阅读全文 ↗</span><span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span></a>)}{blogPlaceholders.slice(0, remainingBlogCards).map(post => <article class="blog-card blog-card-placeholder"><p class="blog-card-label">{post.label}</p><h3 lang="zh-CN" data-i18n-ignore>{post.title}</h3><p class="blog-card-description" lang="zh-CN" data-i18n-ignore>{post.description}</p><span class="blog-card-status">即将发布</span></article>)}</div></section>
@@ -54,14 +62,4 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
   }
 
   :global(html[lang="en"]) .section-title h2 { font-size: clamp(28px, 3vw, 43px); white-space: normal; }
-
-  :global(html[lang="en"]) .profession { max-width: 100%; width: fit-content; }
-
-  :global(html[lang="en"]) .tagline { max-width: 100%; width: fit-content; white-space: normal; }
-
-  @media (max-width: 720px) {
-    :global(html[lang="en"]) .profession { margin-left: 0; font-size: clamp(12px, 3.5vw, 17px); }
-
-    :global(html[lang="en"]) .tagline { margin-left: 0; font-size: clamp(17px, 4.5vw, 22px); }
-  }
 </style>
