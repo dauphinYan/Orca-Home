@@ -1,7 +1,7 @@
 import swordCover from '../assets/projects/sword-world/screenshot-swordworld.webp?url';
 import lockCover from '../assets/projects/lock-knock/cover-horizontal.webp?url';
 import seerCover from '../assets/projects/seer-assistant/seer-assistant-screenshot.webp?url';
-import avatar from '../assets/profile/hinami-aoi.webp?url';
+import avatar from '../assets/profile/i.webp?url';
 
 export const profile = {
   name: 'Orca丶',
