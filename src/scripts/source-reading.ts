@@ -1,8 +1,7 @@
 import { localize } from '../i18n/client';
 
-export function matchesSourceReading(searchText: string, topics: string[], query: string, selectedTopic: string) {
-  return searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())
-    && (!selectedTopic || topics.includes(selectedTopic));
+function readSearchText(element: HTMLElement) {
+  return `${element.dataset.search ?? ''} ${element.textContent}`.toLocaleLowerCase();
 }
 
 export function initSourceReading() {
@@ -16,7 +15,7 @@ export function initSourceReading() {
 
   const cards = [...root.querySelectorAll<HTMLElement>('[data-source-card]')].map(element => ({
     element,
-    searchText: element.dataset.search ?? '',
+    searchText: readSearchText(element),
     topics: JSON.parse(element.dataset.topics ?? '[]') as string[],
   }));
 
@@ -27,30 +26,40 @@ export function initSourceReading() {
   let selectedTopic = '';
 
   function update() {
+    const query = search.value.trim().toLocaleLowerCase();
+
     let visible = 0;
 
     cards.forEach(card => {
-      const searchText = `${card.searchText} ${card.element.textContent}`;
+      const matches = card.searchText.includes(query) && (!selectedTopic || card.topics.includes(selectedTopic));
 
-      const matches = matchesSourceReading(searchText, card.topics, search.value, selectedTopic);
-
-      card.element.hidden = !matches;
-
+      if (card.element.hidden === matches) card.element.hidden = !matches;
       if (matches) visible += 1;
     });
 
-    buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.sourceTopic === selectedTopic)));
+    buttons.forEach(button => {
+      const pressed = String(button.dataset.sourceTopic === selectedTopic);
 
-    results.textContent = search.value.trim() || selectedTopic
+      if (button.getAttribute('aria-pressed') !== pressed) button.setAttribute('aria-pressed', pressed);
+    });
+
+    const summary = query || selectedTopic
       ? localize(`找到 ${visible} 篇解读（共 ${cards.length} 篇）`, `${visible} of ${cards.length} articles found`)
       : localize(`已收录 ${cards.length} 篇解读`, `${cards.length} articles published`);
 
-    empty.hidden = visible > 0;
+    if (results.textContent !== summary) results.textContent = summary;
+
+    const hasResults = visible > 0;
+
+    if (empty.hidden !== hasResults) empty.hidden = hasResults;
   }
 
   search.addEventListener('input', update);
 
-  window.addEventListener('site:language-change', update);
+  window.addEventListener('site:language-change', () => {
+    cards.forEach(card => { card.searchText = readSearchText(card.element); });
+    update();
+  });
 
   update();
 

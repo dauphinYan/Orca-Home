@@ -18,6 +18,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .source-topics button, [data-source-reset] { transition: scale var(--motion-fast) var(--motion-ease); }
   .source-topics button:active, [data-source-reset]:active { scale: .97; }
+  [data-source-empty]:not([hidden]) { animation: motion-fade-in var(--motion-fast) ease-out; }
 }
 
 @media (max-width: 720px) {

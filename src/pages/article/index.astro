@@ -1,6 +1,7 @@
 ---
 import { blogTagLabel } from '../../data/blog-tags';
 import ArticleListRow from '../../components/ArticleListRow.astro';
+import MotionReveal from '../../components/MotionReveal.astro';
 import LanguageSwitch from '../../components/LanguageSwitch.astro';
 
 import { blogDate as formatDate, blogUpdatedAt } from '../../data/blog-dates';
@@ -59,7 +60,7 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
       </section>
 
       <section class="overview-section" aria-labelledby="recommended-title">
-        <div class="overview-section-heading">
+        <div class="overview-section-heading" data-motion-reveal>
           <h2 id="recommended-title">推荐阅读</h2>
           <a href={sourceReadingPath}>查看全部源码解读 ↗</a>
         </div>
@@ -73,11 +74,11 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
       </section>
 
       <section class="article-section" aria-labelledby="featured-sections-title">
-        <div class="article-section-heading">
+        <div class="article-section-heading" data-motion-reveal>
           <p>FEATURED SECTIONS</p>
           <h2 id="featured-sections-title">专题专区</h2>
         </div>
-        <a class="featured-section-card" href={sourceReadingPath}>
+        <a class="featured-section-card" data-motion-reveal href={sourceReadingPath}>
           <div class="featured-section-copy">
             <p class="featured-section-label">UNREAL ENGINE / SOURCE READING</p>
             <h3>虚幻引擎<br />源码解读专区</h3>
@@ -94,7 +95,7 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
       </section>
 
       <section class="article-section latest-section" aria-labelledby="latest-title">
-        <div class="article-section-heading">
+        <div class="article-section-heading" data-motion-reveal>
           <p>LATEST ARTICLES</p>
           <h2 id="latest-title">全部文章</h2>
         </div>
@@ -114,5 +115,6 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
       <a href="/#home">← 返回首页</a>
       <span>© 2026 Orca丶</span>
     </footer>
+    <MotionReveal />
   </body>
 </html>

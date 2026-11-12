@@ -6,7 +6,7 @@ const { project } = Astro.props;
 const Tag = project.href ? 'a' : 'button';
 const dialogId = `project-${project.key}`;
 ---
-<article class={`portfolio-card ${project.key}`}>
+<article class={`portfolio-card ${project.key}`} data-motion-reveal>
   <Tag class="project-media" href={project.href ?? undefined} type={project.href ? undefined : 'button'} data-project-dialog={project.href ? undefined : dialogId} aria-haspopup={project.href ? undefined : 'dialog'} aria-controls={project.href ? undefined : dialogId} aria-label={`查看${project.title}详情`}>
     {project.image ? <img src={project.image} alt="" loading="lazy" /> : <span class="work-in-progress" aria-hidden="true"><span class="world-orbit"></span></span>}
     {project.status && <span class="project-badge">{project.status}</span>}

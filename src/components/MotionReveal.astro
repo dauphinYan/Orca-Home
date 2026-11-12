@@ -1,0 +1,14 @@
+<script>
+  if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+
+        if (!entry.target.matches(':focus-within')) entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      }
+    }, { rootMargin: '0px 0px -24px' });
+
+    document.querySelectorAll('[data-motion-reveal]').forEach(element => observer.observe(element));
+  }
+</script>

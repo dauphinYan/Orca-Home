@@ -10,7 +10,11 @@
 }
 
 @keyframes motion-rise-in {
-  from { translate: 0 var(--motion-rise, 8px); }
+  from { translate: 0 var(--motion-distance, 8px); }
+}
+
+@keyframes motion-reveal-in {
+  from { opacity: .75; translate: 0 var(--motion-distance, 12px); }
 }
 
 @keyframes motion-dialog-in {
@@ -18,8 +22,14 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
   [data-motion-intro] {
     animation: motion-rise-in var(--motion-entrance) var(--motion-ease);
+  }
+
+  [data-motion-reveal].is-revealed {
+    animation: motion-reveal-in var(--motion-entrance) var(--motion-ease) var(--motion-delay, 0ms) backwards;
   }
 
   [data-motion-dialog][open] {
@@ -29,9 +39,38 @@
   [data-motion-dialog][open]::backdrop {
     animation: motion-fade-in var(--motion-standard) ease-out;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  *, *::before, *::after { transition: none !important; }
+  @supports (transition-behavior: allow-discrete) and (overlay: auto) {
+    [data-motion-dialog] {
+      opacity: 0;
+      translate: 0 6px;
+      transition:
+        opacity var(--dialog-duration, var(--motion-fast)) ease-out,
+        translate var(--dialog-duration, var(--motion-fast)) var(--motion-ease),
+        display var(--motion-fast) allow-discrete,
+        overlay var(--motion-fast) allow-discrete;
+    }
+
+    [data-motion-dialog][open] {
+      --dialog-duration: var(--motion-standard);
+      animation: none;
+      opacity: 1;
+      translate: none;
+    }
+
+    [data-motion-dialog]::backdrop {
+      opacity: 0;
+      transition: opacity var(--motion-fast) ease-out, display var(--motion-fast) allow-discrete, overlay var(--motion-fast) allow-discrete;
+    }
+
+    [data-motion-dialog][open]::backdrop { animation: none; opacity: 1; }
+
+    [data-motion-dialog]:not([open]),
+    [data-motion-dialog]:not([open])::backdrop { pointer-events: none; }
+
+    @starting-style {
+      [data-motion-dialog][open] { opacity: 0; translate: 0 6px; }
+      [data-motion-dialog][open]::backdrop { opacity: 0; }
+    }
+  }
 }

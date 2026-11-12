@@ -12,12 +12,13 @@
 .article-overview .overview-section-heading a:hover { color: var(--pink); }
 .article-overview .article-list { list-style: none; margin: 0; padding: 0; }
 .article-overview .article-list li { border-bottom: 1px solid var(--line); }
-.article-overview .article-list-row { align-items: start; display: grid; gap: 16px 32px; grid-template-columns: minmax(0, 1fr) minmax(180px, 28%); padding: 18px 8px; transition: background .15s; }
+.article-overview .article-list-row { align-items: start; display: grid; gap: 16px 32px; grid-template-columns: minmax(0, 1fr) minmax(180px, 28%); padding: 18px 8px; }
 .article-overview .article-list-row:is(:hover, :focus-visible) { background: var(--card-hover); }
 
 @media (prefers-reduced-motion: no-preference) {
   .article-overview .article-list-row h3 { transition: translate var(--motion-fast) var(--motion-ease); }
   .article-overview .article-list-row:focus-visible h3 { translate: 3px; }
+  .article-overview .article-list-row:active h3 { translate: 1px; }
 
   @media (hover: hover) and (pointer: fine) {
     .article-overview .article-list-row:hover h3 { translate: 3px; }

@@ -1,10 +1,12 @@
 ---
+import { Image } from 'astro:assets';
 import LanguageSwitch from '../../components/LanguageSwitch.astro';
 import '../../styles/lockknock.css';
+import MotionReveal from '../../components/MotionReveal.astro';
 import MediaViewer from '../../components/MediaViewer.astro';
 import { projects } from '../../data/portfolio';
 import cover from '../../assets/projects/lock-knock/cover-horizontal.webp?url';
-import poster from '../../assets/projects/lock-knock/cover-vertical.webp?url';
+import poster from '../../assets/projects/lock-knock/cover-vertical.webp';
 import title from '../../assets/projects/lock-knock/title.webp?url';
 import scene from '../../assets/projects/lock-knock/lock-knock-screenshot-1.webp?url';
 import creature from '../../assets/projects/lock-knock/lock-knock-screenshot-2.webp?url';
@@ -36,23 +38,33 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
         <div class="hero-shade"></div>
         <div class="game-hero-content" data-motion-intro>
           <p class="eyebrow">AN INDIE GAME BY ORCA</p>
-          <h1 id="game-title"><img src={title} alt="洛克的迷宫 · Lock Knock" /></h1>
+          <h1 id="game-title"><img src={title} width="811" height="293" alt="洛克的迷宫 · Lock Knock" /></h1>
           <p class="hero-quote">门后，是未知。<br />而你，必须向前。</p>
           <div class="hero-actions"><a class="gold-button" href="#about-game">窥见迷宫 <span>↘</span></a></div>
         </div>
         <div class="hero-bottom"><span>UNREAL ENGINE · 探索 / 迷宫 / 角色扮演</span><a href="#about-game">向下探索 ↓</a></div>
       </section>
       <section class="game-about game-section" id="about-game">
-        <div class="poster-frame"><img src={poster} alt="洛克的迷宫竖版游戏海报" loading="lazy" /><span>LOCK KNOCK / 01</span></div>
-        <div class="about-copy"><p class="eyebrow">01 / INTO THE UNKNOWN</p><h2>踏入迷宫，<br /><em>直面未知。</em></h2><p class="intro">{project.description}</p><p class="subtle">一场围绕探索与逃生展开的冒险。诡异的环境、潜伏的恶灵与怪物，共同构成这座迷宫的危险。</p><ul class="game-tags">{project.tags.map(tag => <li>{tag}</li>)}</ul><dl class="game-facts"><div><dt>舞台装置</dt><dd>GrewGame</dd></div><div><dt>开发引擎</dt><dd>Unreal Engine</dd></div><div><dt>游戏风格</dt><dd>克苏鲁 · 诡异</dd></div></dl></div>
+        <div class="poster-frame" data-motion-reveal>
+          <Image
+            src={poster}
+            widths={[320, 480, 600]}
+            sizes="(max-width: 600px) 66vw, (max-width: 1300px) 35vw, 420px"
+            alt="洛克的迷宫竖版游戏海报"
+            loading="lazy"
+          />
+          <span>LOCK KNOCK / 01</span>
+        </div>
+        <div class="about-copy" data-motion-reveal><p class="eyebrow">01 / INTO THE UNKNOWN</p><h2>踏入迷宫，<br /><em>直面未知。</em></h2><p class="intro">{project.description}</p><p class="subtle">一场围绕探索与逃生展开的冒险。诡异的环境、潜伏的恶灵与怪物，共同构成这座迷宫的危险。</p><ul class="game-tags">{project.tags.map(tag => <li>{tag}</li>)}</ul><dl class="game-facts"><div><dt>舞台装置</dt><dd>GrewGame</dd></div><div><dt>开发引擎</dt><dd>Unreal Engine</dd></div><div><dt>游戏风格</dt><dd>克苏鲁 · 诡异</dd></div></dl></div>
       </section>
       <section class="gallery-section game-section" id="gallery">
-        <div class="section-heading"><div><p class="eyebrow">02 / GLIMPSES OF THE MAZE</p><h2>来自迷宫的切片</h2></div><div class="gallery-controls"><button type="button" data-gallery-direction="-1" aria-label="查看上一张切片">←</button><button type="button" data-gallery-direction="1" aria-label="查看下一张切片">→</button></div></div>
+        <div class="section-heading" data-motion-reveal><div><p class="eyebrow">02 / GLIMPSES OF THE MAZE</p><h2>来自迷宫的切片</h2></div><div class="gallery-controls"><button type="button" data-gallery-direction="-1" aria-label="查看上一张切片">←</button><button type="button" data-gallery-direction="1" aria-label="查看下一张切片">→</button></div></div>
         <div class="gallery-track" aria-label="游戏画面切片">{screenshots.map((image, index) => <figure><button class="screenshot-button" data-image={image} data-index={index} aria-label={`放大查看迷宫切片 ${index + 1}`}><img src={image} alt={`洛克的迷宫游戏画面 ${index + 1}`} loading="lazy" /><span class="zoom-mark" aria-hidden="true">↗</span></button></figure>)}</div>
       </section>
-      <section class="game-follow"><p class="eyebrow">THE JOURNEY CONTINUES</p><h2>在微光中，继续前行。</h2><p>关注 GrewGame，了解更多游戏与开发内容。</p><div class="follow-actions"><a class="gold-button" href={promotionalVideo} target="_blank" rel="noopener noreferrer">前往 Bilibili ↗</a></div></section>
+      <section class="game-follow"><p class="eyebrow">THE JOURNEY CONTINUES</p><h2 data-motion-reveal>在微光中，继续前行。</h2><p>关注 GrewGame，了解更多游戏与开发内容。</p><div class="follow-actions"><a class="gold-button" href={promotionalVideo} target="_blank" rel="noopener noreferrer">前往 Bilibili ↗</a></div></section>
     </main>
     <footer class="game-footer"><span>本网站基于 Astro 构建</span><span>© 2026 Orca丶. 保留所有权利。</span></footer>
+    <MotionReveal />
     <MediaViewer />
     <script>
       const galleryTrack = document.querySelector<HTMLElement>('.gallery-track')!;

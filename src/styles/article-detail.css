@@ -52,7 +52,7 @@ html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body pre.astro-code { background: var(--code-bg) !important; border: 1px solid var(--code-line); border-left: 4px solid var(--pink); border-radius: 4px; box-shadow: 6px 6px 0 var(--shadow); color: var(--code-ink) !important; font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.75; margin: 0; overflow-x: auto; padding: 48px 24px 20px; position: relative; tab-size: 4; }
 .code-block-language { color: var(--muted); font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: 12px; font-weight: 700; left: 20px; line-height: 1; position: absolute; text-transform: lowercase; top: 17px; z-index: 1; }
 .code-block-toggle { background: none; border: 0; color: var(--muted); cursor: pointer; font-family: 'Noto Sans SC', Arial, sans-serif; font-size: 13px; font-weight: 700; line-height: 1; padding: 5px; position: absolute; right: 12px; top: 13px; z-index: 1; }
-.code-block-toggle:hover { color: var(--pink); }
+.code-block-toggle:is(:hover, :focus-visible) { color: var(--pink); }
 .article-body pre.astro-code.is-collapsed { max-height: calc(48px + 3.5em + 20px); overflow: hidden; padding-bottom: 20px; }
 .article-body pre.astro-code.is-collapsed::after { background: linear-gradient(transparent, var(--code-bg) 82%); bottom: 0; content: ''; height: 54px; left: 0; pointer-events: none; position: absolute; right: 0; }
 @media (prefers-color-scheme: light) { .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#E1E4E8'] { color: #24292e !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#B392F0'] { color: #6f42c1 !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#F97583'] { color: #d73a49 !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#79B8FF'] { color: #005cc5 !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#9ECBFF'] { color: #032f62 !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#FFAB70'] { color: #e36209 !important; } .article-body pre.astro-code.github-dark:not(.github-light) span[style*='color:#6A737D'] { color: #6a737d !important; } }
@@ -60,7 +60,21 @@ html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body pre.astro-code .line { min-height: 1.75em; }
 .article-body pre.astro-code span[style*='--shiki-light'] { color: var(--shiki-light) !important; }
 .back-to-top { background: var(--lime); border: 2px solid var(--ink); bottom: calc(28px + var(--article-footer-clearance, 0px)); box-shadow: 4px 4px 0 var(--pink); color: var(--media); cursor: pointer; font-family: 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 900; letter-spacing: .8px; padding: 12px 10px; position: fixed; right: 28px; transform: rotate(-4deg); z-index: 2; }
-.back-to-top:hover { background: var(--pink); box-shadow: 2px 2px 0 var(--ink); transform: rotate(0) translate(-2px, -2px); }
+.back-to-top:is(:hover, :focus-visible) { background: var(--pink); box-shadow: 2px 2px 0 var(--ink); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .back-to-top { transition: rotate var(--motion-fast) var(--motion-ease); }
+  .back-to-top:not([hidden]) {
+    --motion-distance: 5px;
+    animation: motion-reveal-in var(--motion-fast) var(--motion-ease);
+  }
+
+  .back-to-top:focus-visible { rotate: 4deg; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .back-to-top:hover { rotate: 4deg; }
+  }
+}
 @media (max-width: 1500px) { .article-decor { display: none; } }
 @media (max-width: 720px) {
   .blog-page { padding: 42px 0 60px; }
