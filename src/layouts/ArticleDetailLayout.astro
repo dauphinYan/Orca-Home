@@ -13,7 +13,6 @@ interface Props {
   title: string;
   description: string;
   eyebrow: string;
-  variant?: 'blog' | 'knowledge';
   decorLeft?: string;
   decorRight?: string;
   footerNote: string;
@@ -21,7 +20,7 @@ interface Props {
 }
 
 const {
-  pageTitle, title, description, eyebrow, variant = 'blog',
+  pageTitle, title, description, eyebrow,
   decorLeft = '001', decorRight = 'PLAY', footerNote, footerCopyright,
 } = Astro.props;
 ---
@@ -39,12 +38,11 @@ const {
   <body class="page-with-paint-splashes article-detail-page">
     <header><div class="nav-inner"><nav aria-label="主导航"><a href="/#home">首页</a><a href="/#projects">作品</a><a href="/article/" class="active" aria-current="page">文章</a><a href="/#about">关于</a><a href="/#contact">联系</a></nav><LanguageSwitch /></div></header>
     <slot name="leftSidebar" />
-    <slot name="rightSidebar" />
     <div class="article-decor article-decor-left" aria-hidden="true"><span>+</span><i></i><b>{decorLeft}</b></div>
     <div class="article-decor article-decor-right" aria-hidden="true"><span>{decorRight}</span><i></i><b>///</b></div>
-    <main class:list={['blog-page', { 'knowledge-article-page': variant === 'knowledge' }]}>
+    <main class="blog-page">
       <slot name="preamble" />
-      <article class:list={['blog-post', { 'knowledge-article': variant === 'knowledge' }]}>
+      <article class="blog-post">
         <p class="post-eyebrow">{eyebrow}</p>
         <h1 lang="zh-CN" data-i18n-ignore>{title}</h1>
         <p class="post-description" lang="zh-CN" data-i18n-ignore>{description}</p>

@@ -4,8 +4,6 @@ let outlineObserver: IntersectionObserver | undefined;
 
 /** Shared reader enhancements for long-form articles. */
 export function initArticleReader() {
-  initArticleSidebarToggles();
-
   const backToTop = document.querySelector('[data-back-to-top]');
   if (backToTop instanceof HTMLButtonElement) {
     const update = () => { backToTop.hidden = window.scrollY < window.innerHeight; };
@@ -54,62 +52,35 @@ export function initArticleReader() {
       button.textContent = collapsed ? localize('展开', 'Expand') : localize('收起', 'Collapse');
     });
 
-    document.querySelectorAll<HTMLElement>('[data-article-sidebar-toggle]').forEach(toggle => {
-      const label = toggle.dataset.articleSidebarToggle === 'knowledge'
-        ? localize('目录', 'Contents') : localize('大纲', 'Outline');
-
-      toggle.innerHTML = `<span aria-hidden="true">☰</span>${label}`;
-    });
+    const toggle = document.querySelector('[data-article-sidebar-toggle="outline"]');
+    if (toggle) toggle.innerHTML = `<span aria-hidden="true">☰</span>${localize('大纲', 'Outline')}`;
 
     initArticleOutline();
   });
 }
 
-/** Switch floating sidebars to drawers when the article leaves too little room. */
+/** Switch the outline to a drawer when the article leaves too little room. */
 function initArticleSidebarLayout() {
   const article = document.querySelector<HTMLElement>('.blog-page');
+  const sidebar = document.querySelector<HTMLElement>('[data-article-sidebar="outline"]');
 
-  const sidebars = [...document.querySelectorAll<HTMLElement>('.article-sidebar--floating')];
-
-  if (!article || sidebars.length === 0) return;
+  if (!article || !sidebar) return;
 
   const update = () => {
-    const articleBounds = article.getBoundingClientRect();
+    sidebar.classList.remove('is-compact');
+    const gap = article.getBoundingClientRect().left - sidebar.getBoundingClientRect().right;
+    const compact = window.matchMedia('(max-width: 1500px)').matches || gap < 24;
+    sidebar.classList.toggle('is-compact', compact);
 
-    const narrowViewport = window.matchMedia('(max-width: 1500px)').matches;
+    const toggle = document.querySelector<HTMLButtonElement>('[data-article-sidebar-toggle="outline"]');
+    if (toggle) toggle.hidden = sidebar.hidden;
 
-    // Measure the normal sidebar position, even while its drawer is open.
-    sidebars.forEach(sidebar => sidebar.classList.remove('is-compact'));
+    if (!compact || sidebar.hidden) {
+      sidebar.classList.remove('is-mobile-open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }
 
-    const layouts = sidebars.map(sidebar => {
-      const bounds = sidebar.getBoundingClientRect();
-
-      const isRight = sidebar.classList.contains('article-sidebar--right');
-
-      const gap = isRight ? bounds.left - articleBounds.right : articleBounds.left - bounds.right;
-
-      return { sidebar, compact: narrowViewport || gap < 24 };
-    });
-
-    layouts.forEach(({ sidebar, compact }) => {
-      sidebar.classList.toggle('is-compact', compact);
-
-      const toggle = document.querySelector<HTMLButtonElement>(`[data-article-sidebar-toggle="${sidebar.dataset.articleSidebar}"]`);
-
-      if (toggle) {
-        toggle.hidden = sidebar.hidden;
-        toggle.classList.toggle('is-compact-toggle', compact && !sidebar.hidden);
-      }
-
-      if (!compact || sidebar.hidden) {
-        sidebar.classList.remove('is-mobile-open');
-        toggle?.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    document.querySelector('[data-article-mobile-actions]')?.classList.toggle(
-      'has-compact-sidebar', layouts.some(({ sidebar, compact }) => compact && !sidebar.hidden),
-    );
+    document.querySelector('[data-article-mobile-actions]')?.classList.toggle('has-compact-sidebar', compact && !sidebar.hidden);
   };
 
   update();
@@ -277,86 +248,47 @@ function initArticleFooterClearance() {
   if (actions) observer.observe(actions);
 }
 
-/** Adds the shared mobile drawer behavior to every article navigation sidebar. */
-function initArticleSidebarToggles() {
-  document.querySelectorAll<HTMLElement>('[data-article-sidebar]').forEach(sidebar => {
-    if (sidebar.dataset.mobileHref) {
-      addArticleMobileLink(sidebar);
-      return;
-    }
-    if (!sidebar.hidden) initArticleSidebarToggle(sidebar);
-  });
-}
-
-function getArticleMobileActions() {
-  let actions = document.querySelector<HTMLElement>('[data-article-mobile-actions]');
-  if (!actions) {
-    actions = document.createElement('div');
-    actions.className = 'article-mobile-actions';
-    actions.dataset.articleMobileActions = '';
-    document.body.append(actions);
-  }
-  return actions;
-}
-
-function addArticleMobileLink(sidebar: HTMLElement) {
-  const kind = sidebar.dataset.articleSidebar;
-  const href = sidebar.dataset.mobileHref;
-  if (!kind || !href || document.querySelector(`[data-article-sidebar-link="${kind}"]`)) return;
-  const link = document.createElement('a');
-  link.className = 'article-sidebar-toggle';
-  link.href = href;
-  link.dataset.articleSidebarLink = kind;
-  link.innerHTML = `<span aria-hidden="true">☰</span>${localize('目录', 'Contents')}`;
-  getArticleMobileActions().append(link);
-}
-
 function initArticleSidebarToggle(sidebar: HTMLElement) {
-    const kind = sidebar.dataset.articleSidebar;
-    if (!kind) return;
-    const actions = getArticleMobileActions();
-    let toggle = actions.querySelector<HTMLButtonElement>(`[data-article-sidebar-toggle="${kind}"]`);
-    if (!toggle) {
-      toggle = document.createElement('button');
-      toggle.className = 'article-sidebar-toggle';
-      toggle.type = 'button';
-      toggle.setAttribute('aria-controls', sidebar.id);
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.dataset.articleSidebarToggle = kind;
-      const label = kind === 'knowledge' ? localize('目录', 'Contents') : localize('大纲', 'Outline');
+  if (document.querySelector('[data-article-sidebar-toggle="outline"]')) return;
 
-      toggle.innerHTML = `<span aria-hidden="true">☰</span>${label}`;
-      actions.append(toggle);
+  const actions = document.createElement('div');
+  actions.className = 'article-mobile-actions';
+  actions.dataset.articleMobileActions = '';
+
+  const toggle = document.createElement('button');
+  toggle.className = 'article-sidebar-toggle';
+  toggle.type = 'button';
+  toggle.setAttribute('aria-controls', sidebar.id);
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.dataset.articleSidebarToggle = 'outline';
+  toggle.innerHTML = `<span aria-hidden="true">☰</span>${localize('大纲', 'Outline')}`;
+  actions.append(toggle);
+  document.body.append(actions);
+
+  const close = () => {
+    sidebar.classList.remove('is-mobile-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = sidebar.classList.toggle('is-mobile-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  sidebar.addEventListener('click', event => {
+    if (event.target instanceof HTMLAnchorElement) close();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && sidebar.classList.contains('is-mobile-open')) {
+      close();
+      toggle.focus();
     }
-    if (toggle.dataset.initialized) return;
-    toggle.dataset.initialized = 'true';
+  });
 
-    const close = () => {
-      sidebar.classList.remove('is-mobile-open');
-      toggle.setAttribute('aria-expanded', 'false');
-    };
-    toggle.addEventListener('click', () => {
-      document.querySelectorAll<HTMLElement>('[data-article-sidebar].is-mobile-open').forEach(otherSidebar => {
-        if (otherSidebar === sidebar) return;
-        otherSidebar.classList.remove('is-mobile-open');
-        const otherKind = otherSidebar.dataset.articleSidebar;
-        actions.querySelector<HTMLButtonElement>(`[data-article-sidebar-toggle="${otherKind}"]`)?.setAttribute('aria-expanded', 'false');
-      });
-      const isOpen = sidebar.classList.toggle('is-mobile-open');
-      toggle.setAttribute('aria-expanded', String(isOpen));
-    });
-    sidebar.addEventListener('click', event => {
-      if (event.target instanceof HTMLAnchorElement) close();
-    });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && sidebar.classList.contains('is-mobile-open')) {
-        close();
-        toggle.focus();
-      }
-    });
-    document.addEventListener('click', event => {
-      if (!sidebar.classList.contains('is-mobile-open')) return;
-      const target = event.target;
-      if (target instanceof Node && !sidebar.contains(target) && !actions.contains(target)) close();
-    });
+  document.addEventListener('click', event => {
+    if (!sidebar.classList.contains('is-mobile-open')) return;
+    const target = event.target;
+    if (target instanceof Node && !sidebar.contains(target) && !actions.contains(target)) close();
+  });
 }

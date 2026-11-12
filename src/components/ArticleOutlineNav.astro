@@ -1,10 +1,8 @@
 ---
 import '../styles/article-outline.css';
-import ArticleSidebar from './ArticleSidebar.astro';
-
-interface Props { side?: 'left' | 'right'; }
-const { side = 'right' } = Astro.props;
 ---
-<ArticleSidebar label="ON THIS PAGE" title="大纲" ariaLabel="文章大纲" kind="outline" side={side} hidden>
+<aside id="article-sidebar-outline" class="article-sidebar article-sidebar--outline article-sidebar--floating" aria-label="文章大纲" data-article-sidebar="outline" hidden>
+  <p class="article-sidebar-label">ON THIS PAGE</p>
+  <h2 class="article-sidebar-title">大纲</h2>
   <nav id="article-toc-list" data-article-toc-list aria-label="文章章节"></nav>
-</ArticleSidebar>
+</aside>

@@ -14,26 +14,4 @@ const blog = defineCollection({
   schema: blogSchema,
 });
 
-const unrealDocSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  sourceTitle: z.string(),
-  sourceUrl: z.string().url(),
-  engineVersion: z.literal('5.8'),
-  reviewedAt: z.coerce.date(),
-  order: z.number(),
-  tags: z.array(z.string()).default([]),
-  draft: z.boolean().default(false),
-});
-
-const unrealCpp = defineCollection({
-  loader: glob({ base: './src/content/unreal-engine/5.8/programming-with-cplusplus', pattern: '**/*.md' }),
-  schema: unrealDocSchema,
-});
-
-const gameplaySystems = defineCollection({
-  loader: glob({ base: './src/content/unreal-engine/5.8/gameplay-systems', pattern: '**/*.md' }),
-  schema: unrealDocSchema,
-});
-
-export const collections = { blog, unrealCpp, gameplaySystems };
+export const collections = { blog };

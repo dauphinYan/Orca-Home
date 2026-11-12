@@ -31,6 +31,5 @@ export default {
 
 文章列表和源码解读专区自动从英文集合读取文章标题及描述，推荐卡片预览也从英文正文生成。搜索支持中英文标题，并随语言更新结果提示。代码和注释可保留原样；面向读者的文本示意图与 Mermaid 标签应翻译。
 
-官方文档中文专区 `/article/unreal-engine/` 及其 `cpp/`、`gameplay-systems/` 文档不参与此集合，也不提供切换按钮。
 
 普通页面中带数量等动态数据的纯文本可使用 `data-i18n-en="英文"`；成段的双语 HTML 可分别使用 `data-language-content="zh-CN"` 与 `data-language-content="en"`（英文默认 `hidden`）。切换后会触发 `site:language-change` 事件，动态交互可据此刷新。

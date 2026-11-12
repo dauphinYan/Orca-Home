@@ -12,10 +12,7 @@ import { getCollection } from 'astro:content';
 
 const blogPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
-const unrealCpp = await getCollection('unrealCpp', ({ data }) => !data.draft);
-const gameplaySystems = await getCollection('gameplaySystems', ({ data }) => !data.draft);
-const unrealArticleCount = unrealCpp.length + gameplaySystems.length;
-const totalArticleCount = blogPosts.length + unrealArticleCount;
+const totalArticleCount = blogPosts.length;
 const latestUpdatedAt = blogPosts.reduce<Date | undefined>((latest, post) => {
   const updatedAt = blogUpdatedAt(post);
 
@@ -80,35 +77,20 @@ const highlightedPosts = sourceReadingHighlights(sourceReading.articles);
           <p>FEATURED SECTIONS</p>
           <h2 id="featured-sections-title">专题专区</h2>
         </div>
-        <div class="featured-sections-grid">
-          <a class="featured-section-card featured-section-card--source" href={sourceReadingPath}>
-            <div class="featured-section-copy">
-              <p class="featured-section-label">UNREAL ENGINE / SOURCE READING</p>
-              <h3>虚幻引擎<br />源码解读专区</h3>
-              <p>从源码理解引擎机制，记录关键流程与设计思路。</p>
-            </div>
-            <div class="featured-section-meta">
-              <span data-i18n-en={`${sourceReading.count} articles published`}>已收录 {sourceReading.count} 篇解读</span>
-              {sourceReading.latestPublishedAt && <span><span>最近发布</span> <time datetime={sourceReading.latestPublishedAt.toISOString()}>{formatDate(sourceReading.latestPublishedAt)}</time></span>}
-              <strong>进入专区 ↗</strong>
-            </div>
-            <span class="featured-section-stamp">专区</span>
-            <span class="featured-section-code" aria-hidden="true">C++</span>
-          </a>
-          <a class="featured-section-card" href="/article/unreal-engine/">
-            <div class="featured-section-copy">
-              <p class="featured-section-label">UNREAL ENGINE 5.8 / OFFICIAL DOCS GUIDE</p>
-              <h3>虚幻引擎官方文档<br />中文专区</h3>
-              <p>以官方文档目录为骨架，用中文导读串起 C++ 编程与游戏性系统的关键概念。</p>
-            </div>
-            <div class="featured-section-meta">
-              <span data-i18n-en={`${unrealArticleCount} Chinese guides published`}>已收录 {unrealArticleCount} 篇导读</span>
-              <strong>进入专区 ↗</strong>
-            </div>
-            <span class="featured-section-stamp">专区</span>
-            <span class="featured-section-code" aria-hidden="true">UE<br />5.8</span>
-          </a>
-        </div>
+        <a class="featured-section-card" href={sourceReadingPath}>
+          <div class="featured-section-copy">
+            <p class="featured-section-label">UNREAL ENGINE / SOURCE READING</p>
+            <h3>虚幻引擎<br />源码解读专区</h3>
+            <p>从源码理解引擎机制，记录关键流程与设计思路。</p>
+          </div>
+          <div class="featured-section-meta">
+            <span data-i18n-en={`${sourceReading.count} articles published`}>已收录 {sourceReading.count} 篇解读</span>
+            {sourceReading.latestPublishedAt && <span><span>最近发布</span> <time datetime={sourceReading.latestPublishedAt.toISOString()}>{formatDate(sourceReading.latestPublishedAt)}</time></span>}
+            <strong>进入专区 ↗</strong>
+          </div>
+          <span class="featured-section-stamp">专区</span>
+          <span class="featured-section-code" aria-hidden="true">C++</span>
+        </a>
       </section>
 
       <section class="article-section latest-section" aria-labelledby="latest-title">
