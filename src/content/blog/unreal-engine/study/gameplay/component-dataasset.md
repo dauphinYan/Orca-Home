@@ -41,7 +41,7 @@ Lock->RegisterComponent();
 // 不再需要时由拥有者调用 Lock->DestroyComponent()，并清理外部订阅。
 ```
 
-`AActor::AddInstanceComponent` 设置 `CreationMethod::Instance` 并添加进 `InstanceComponents`；注册阶段会先检查Owner所在的 ` UWorld ` 是否有效，再调用 `RegisterComponentWithWorld`；`RegisterComponentWithWorld`检查对象有效、是否已经注册和 World 是否存在。
+`AActor::AddInstanceComponent` 设置 `CreationMethod::Instance` 并添加进 `InstanceComponents`；注册阶段会先检查Owner所在的 `UWorld` 是否有效，再调用 `RegisterComponentWithWorld`；`RegisterComponentWithWorld` 检查对象有效、是否已经注册和 World 是否存在。
 
 ### 2. BeginPlay 的实际门槛
 

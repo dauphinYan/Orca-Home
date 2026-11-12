@@ -116,7 +116,7 @@ ENGINE_API void ClearInstanceComponents(bool bDestroyComponents);
 典型流程：
 
 ```
-构造
+Constructor
  ↓
 PostLoad / Spawn
  ↓
@@ -137,7 +137,65 @@ EndPlay
 Destroyed
 ```
 
-`AActor` 负责定义“世界实体从出生到死亡”的生命周期协议。因此BeginPlay、Tick、EndPlay不是 `UObject` 的职责。
+`AActor` 负责定义“世界实体从出生到死亡”的生命周期协议。因此 BeginPlay、Tick、EndPlay 不是 `UObject` 的职责。
+
+
+
+Actor 和 Component 的生命周期整体可划分为四个阶段：
+
+1. 构造与加载（Construction & Load）
+
+2. 组件注册初始化（Register & Component Initialization）
+
+3. 游戏运行（BeginPlay & Tick）
+
+4. 销毁与内存回收（EndPlay & GC）
+
+#### 阶段一：构造与加载
+
+`C++ Constructor`：构建 CDO，仅用于初始化默认属性值、创建默认子对象（`CreateDefaultSubobject`）。
+
+> CDO 的创建时机主要有三种：
+>
+> - C++ 原生类，`UClass` 注册并初始化时，通常在模块加载。
+> - 蓝图生成类，蓝图类首次加载、编译或重新编译
+> - 动态加载类，运行时按需加载并初始化对应的类
+>
+> UE 中每个 `UClass` 都维护一个 CDO，用于保存类的默认属性。
+>
+> CDO 通常在类注册、加载和初始化过程中创建。对于原生 C++ 类，通常发生在引擎启动或模块加载阶段；对于蓝图类，通常发生在蓝图加载或编译阶段。
+
+`PostLoad`（仅从磁盘/关卡加载时）：资产反序列化完成。
+
+`OnConstruction`（Actor 独有）：对应蓝图的 *Construction Script*。在 Actor 放置、移动属性修改或 Spawn 时执行，常用于编辑器内动态构建网格或组件层级。
+
+#### 阶段二：注册与组件初始化
+
+组件会调用注册函数
+
+```
+RegisterComponent() 组件正式绑定到 World
+ ↓
+PreInitializeComponents 准备初始化的前置
+ ↓
+InitializeComponent 组件自身的业务初始化逻辑
+ ↓
+PostInitializeComponents 所有组件已初始化完毕
+```
+
+#### 阶段三：游戏开始与每帧更新
+
+`BeginPlay()` 
+
+先遍历分发所有 Component 的 BeginPlay()，然后再执行 Actor 自身的 BeginPlay()。
+
+#### 阶段四：销毁与垃圾回收
+
+显式销毁：Destroy() → UWorld::DestroyActor() → Destroyed()（内部触发 EndPlay(Destroyed)）→ 从关卡的 Actor 列表移除 → 注销组件 → 标记为垃圾。
+
+关卡卸载：触发 EndPlay。
+
+GC 阶段（垃圾回收）：BeginDestroy() -> FinishDestroy() -> C++ 析构并释放内存。
 
 ### 5. Spawn / Destroy
 
@@ -176,7 +234,7 @@ struct FActorTickFunction PrimaryActorTick;
 ENGINE_API virtual void Tick( float DeltaSeconds );
 ```
 
-> Actor 支持 Tick，不代表 Actor 必须 Tick，可通过 PrimaryActorTick.bCanEverTick 启动或关闭。
+Actor 支持 Tick，不代表 Actor 必须 Tick，可通过 PrimaryActorTick.bCanEverTick 启动或关闭。
 
 ### 7. 网络复制
 
