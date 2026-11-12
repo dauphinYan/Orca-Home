@@ -15,7 +15,8 @@ import corridor from '../../assets/projects/lock-knock/lock-knock-screenshot-4.w
 import chamber from '../../assets/projects/lock-knock/lock-knock-screenshot-5.webp?url';
 const project = projects.find(project => project.key === 'lockknock')!;
 const screenshots = [scene, creature, lantern, corridor, chamber];
-const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
+const promotionalVideoUrl = 'https://www.bilibili.com/video/BV1SwGN68EPs';
+const promotionalVideoEmbedUrl = 'https://player.bilibili.com/player.html?isOutside=true&aid=117014639216595&bvid=BV1SwGN68EPs&cid=40476018406&p=1&autoplay=0';
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -40,9 +41,25 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
           <p class="eyebrow">AN INDIE GAME BY ORCA</p>
           <h1 id="game-title"><img src={title} width="811" height="293" alt="洛克的迷宫 · Lock Knock" /></h1>
           <p class="hero-quote">门后，是未知。<br />而你，必须向前。</p>
-          <div class="hero-actions"><a class="gold-button" href="#about-game">窥见迷宫 <span>↘</span></a></div>
+          <div class="hero-actions"><a class="gold-button" href="#game-video">观看宣传片 <span aria-hidden="true">↘</span></a></div>
         </div>
-        <div class="hero-bottom"><span>UNREAL ENGINE · 探索 / 迷宫 / 角色扮演</span><a href="#about-game">向下探索 ↓</a></div>
+        <div class="hero-bottom"><span>UNREAL ENGINE · 探索 / 迷宫 / 角色扮演</span><a href="#about-game">游戏介绍 ↓</a></div>
+      </section>
+      <section class="game-video" id="game-video" aria-labelledby="game-video-title">
+        <div class="game-video-content game-section">
+          <div class="game-video-heading">
+            <h2 id="game-video-title">游戏宣传片</h2>
+            <a class="text-button" href={promotionalVideoUrl} target="_blank" rel="noopener noreferrer">
+              在 Bilibili 观看 <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <iframe
+            src={promotionalVideoEmbedUrl}
+            title="洛克的迷宫宣传片 · Bilibili"
+            loading="lazy"
+            allowfullscreen
+          ></iframe>
+        </div>
       </section>
       <section class="game-about game-section" id="about-game">
         <div class="poster-frame" data-motion-reveal>
@@ -61,7 +78,6 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
         <div class="section-heading" data-motion-reveal><div><p class="eyebrow">02 / GLIMPSES OF THE MAZE</p><h2>来自迷宫的切片</h2></div><div class="gallery-controls"><button type="button" data-gallery-direction="-1" aria-label="查看上一张切片">←</button><button type="button" data-gallery-direction="1" aria-label="查看下一张切片">→</button></div></div>
         <div class="gallery-track" aria-label="游戏画面切片">{screenshots.map((image, index) => <figure><button class="screenshot-button" data-image={image} data-index={index} aria-label={`放大查看迷宫切片 ${index + 1}`}><img src={image} alt={`洛克的迷宫游戏画面 ${index + 1}`} loading="lazy" /><span class="zoom-mark" aria-hidden="true">↗</span></button></figure>)}</div>
       </section>
-      <section class="game-follow"><p class="eyebrow">THE JOURNEY CONTINUES</p><h2 data-motion-reveal>在微光中，继续前行。</h2><p>关注 GrewGame，了解更多游戏与开发内容。</p><div class="follow-actions"><a class="gold-button" href={promotionalVideo} target="_blank" rel="noopener noreferrer">前往 Bilibili ↗</a></div></section>
     </main>
     <footer class="game-footer"><span>本网站基于 Astro 构建</span><span>© 2026 Orca丶. 保留所有权利。</span></footer>
     <MotionReveal />
