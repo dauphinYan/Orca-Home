@@ -13,7 +13,16 @@
 .article-overview .article-list { list-style: none; margin: 0; padding: 0; }
 .article-overview .article-list li { border-bottom: 1px solid var(--line); }
 .article-overview .article-list-row { align-items: start; display: grid; gap: 16px 32px; grid-template-columns: minmax(0, 1fr) minmax(180px, 28%); padding: 18px 8px; transition: background .15s; }
-.article-overview .article-list-row:hover { background: var(--card-hover); }
+.article-overview .article-list-row:is(:hover, :focus-visible) { background: var(--card-hover); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .article-overview .article-list-row h3 { transition: translate var(--motion-fast) var(--motion-ease); }
+  .article-overview .article-list-row:focus-visible h3 { translate: 3px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .article-overview .article-list-row:hover h3 { translate: 3px; }
+  }
+}
 .article-overview .article-list-row:focus-visible { outline-offset: -3px; }
 .article-overview .article-list-copy { min-width: 0; }
 .article-overview .article-list-row h3 { font-size: 20px; font-weight: 700; line-height: 1.5; margin: 0; overflow-wrap: anywhere; }

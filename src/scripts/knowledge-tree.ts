@@ -14,8 +14,9 @@ export function initKnowledgeTree() {
     const trigger = event.target.closest<HTMLElement>('.knowledge-branch');
     if (trigger) {
       const item = trigger.closest<HTMLElement>('li.is-folder');
-      if (item) setBranchExpanded(item, item.classList.contains('is-collapsed'));
-      return;
+      if (!item) return;
+      item.dataset.motionBranch = '';
+      setBranchExpanded(item, item.classList.contains('is-collapsed'));
     }
   });
 }

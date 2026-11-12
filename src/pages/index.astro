@@ -35,7 +35,7 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
   <main>
    <section id="home" class="hero">
     <div class="hero-art" aria-hidden="true"></div>
-    <div class="hero-copy">
+    <div class="hero-copy" data-motion-intro>
      <h1><span class="hello">你好，我是</span><span class="name">Orca丶</span></h1>
      <p class="hero-status">当前阶段：求职中</p>
      <p class="hero-intent">意向：游戏客户端开发</p>
@@ -53,6 +53,18 @@ const remainingBlogCards = Math.max(0, 4 - blogPosts.length);
    const sectionHref = (id: string) => id === 'articles' ? '/article/' : `#${id}`;
    const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if(entry.isIntersecting) links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === sectionHref(entry.target.id))); }); }, { threshold: 0, rootMargin: '-10% 0px -65% 0px' });
     ['home','projects','articles','about','contact'].forEach(id => observer.observe(document.getElementById(id)!));
+
+    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      const sectionObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.intersectionRatio < .75) return;
+          entry.target.classList.add('is-seen');
+          sectionObserver.unobserve(entry.target);
+        });
+      }, { threshold: .75 });
+
+      document.querySelectorAll('.section-title h2 span').forEach(mark => sectionObserver.observe(mark));
+    }
   </script>
  </body>
 </html>

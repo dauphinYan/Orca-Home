@@ -1,4 +1,4 @@
-import type { KnowledgeTreeNode } from './knowledge-section';
+import { articleUrlSlug, type KnowledgeTreeNode } from './knowledge-section';
 import { buildKnowledgeTree as buildCppTree, knowledgeUrl as cppKnowledgeUrl } from './unreal-cpp';
 import { buildKnowledgeTree as buildGameplayTree, knowledgeUrl as gameplayKnowledgeUrl } from './unreal-gameplay';
 
@@ -21,5 +21,16 @@ export function buildUnrealDocsTree(cppEntries: Parameters<typeof buildCppTree>[
   return [
     ...withSectionUrls(buildCppTree(cppEntries), cppKnowledgeUrl),
     ...withSectionUrls(buildGameplayTree(gameplayEntries), gameplayKnowledgeUrl),
+  ];
+}
+
+export function buildUnrealDocsArticles(cppEntries: Parameters<typeof buildCppTree>[0], gameplayEntries: Parameters<typeof buildGameplayTree>[0]) {
+  return [
+    ...cppEntries.filter(({ data }) => !data.draft).map(article => ({
+      ...article, href: cppKnowledgeUrl(articleUrlSlug(article.id)), section: 'C++ 编程',
+    })),
+    ...gameplayEntries.filter(({ data }) => !data.draft).map(article => ({
+      ...article, href: gameplayKnowledgeUrl(articleUrlSlug(article.id)), section: '游戏性系统',
+    })),
   ];
 }

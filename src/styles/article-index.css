@@ -20,7 +20,7 @@ html[lang="en"] .article-index :is(h1, h2, h3) { overflow-wrap: anywhere; }
 .article-section-heading { align-items: end; display: flex; gap: 22px; margin-bottom: 25px; }
 .article-section-heading p { color: var(--pink); margin-bottom: 6px; order: 2; }
 .article-section-heading h2 { font-size: clamp(30px, 3.3vw, 46px); font-style: italic; letter-spacing: -1.5px; line-height: 1; margin: 0; }
-.featured-section-card { background: linear-gradient(135deg, color-mix(in srgb, var(--pink) 22%, transparent), transparent 58%); border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); color: var(--ink); display: grid; gap: 34px; grid-template-columns: minmax(0, 1fr) auto; min-height: 285px; overflow: hidden; padding: clamp(28px, 3.4vw, 48px); position: relative; transition: background .2s, box-shadow .2s, transform .2s; }
+.featured-section-card { background: linear-gradient(135deg, color-mix(in srgb, var(--pink) 22%, transparent), transparent 58%); border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); color: var(--ink); display: grid; gap: 34px; grid-template-columns: minmax(0, 1fr) auto; min-height: 285px; overflow: hidden; padding: clamp(28px, 3.4vw, 48px); position: relative; }
 .featured-section-card::before { background: radial-gradient(var(--dot) 1px, transparent 1.5px) 0 0 / 7px 7px; content: ''; height: 150px; mask-image: linear-gradient(225deg, #000, transparent 72%); position: absolute; right: 0; top: 0; width: 210px; }
 .featured-section-card:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--pink) 28%, transparent), transparent 62%); box-shadow: 6px 6px 0 var(--pink); transform: translate(-2px, -2px); }
 .featured-section-copy { align-self: center; position: relative; z-index: 1; }
@@ -41,7 +41,7 @@ html[lang="en"] .article-index :is(h1, h2, h3) { overflow-wrap: anywhere; }
 @media (max-width: 720px) { .featured-sections-grid { grid-template-columns: 1fr; } }
 .recommended-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.55fr) minmax(280px, .85fr); }
 .recommended-grid--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.recommended-card { border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); display: flex; flex-direction: column; min-height: 210px; overflow: hidden; padding: 25px 64px 22px 24px; position: relative; transition: background .2s, box-shadow .2s, transform .2s; }
+.recommended-card { border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); display: flex; flex-direction: column; min-height: 210px; overflow: hidden; padding: 25px 64px 22px 24px; position: relative; }
 .recommended-card--lead { grid-row: span 2; min-height: 436px; padding: 38px 74px 32px 34px; }
 .recommended-grid--compact .recommended-card--lead { grid-row: auto; min-height: 300px; }
 .recommended-card:hover, .latest-card:hover { background: var(--card-hover); box-shadow: 5px 5px 0 var(--pink); transform: translateY(-3px); }
@@ -63,7 +63,7 @@ html[lang="en"] .article-index :is(h1, h2, h3) { overflow-wrap: anywhere; }
 .recommended-card:hover .round-arrow, .latest-card:hover .round-arrow { background: var(--pink); color: white; transform: rotate(-35deg); }
 .latest-section { border-bottom: 0; }
 .latest-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.latest-card { border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); display: flex; flex-direction: column; min-height: 230px; overflow: hidden; padding: 26px 64px 22px 24px; position: relative; transition: background .2s, box-shadow .2s, transform .2s; }
+.latest-card { border: 1px solid var(--line); box-shadow: 0 2px 5px var(--shadow); display: flex; flex-direction: column; min-height: 230px; overflow: hidden; padding: 26px 64px 22px 24px; position: relative; }
 .latest-card::before { background: radial-gradient(var(--dot) 1px, transparent 1.5px) 0 0 / 6px 6px; content: ''; height: 90px; mask-image: linear-gradient(225deg, #000, transparent 70%); position: absolute; right: 0; top: 0; width: 120px; }
 .article-empty { border: 1px dashed var(--line); color: var(--muted); margin: 0; padding: 28px; }
 .article-index-footer { border-top: 1px solid var(--line); color: var(--muted); display: flex; font-size: 13px; justify-content: space-between; padding: 24px 4%; }

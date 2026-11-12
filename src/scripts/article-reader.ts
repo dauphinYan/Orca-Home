@@ -5,7 +5,6 @@ let outlineObserver: IntersectionObserver | undefined;
 /** Shared reader enhancements for long-form articles. */
 export function initArticleReader() {
   initArticleSidebarToggles();
-  initArticleFooterClearance();
 
   const backToTop = document.querySelector('[data-back-to-top]');
   if (backToTop instanceof HTMLButtonElement) {
@@ -46,6 +45,7 @@ export function initArticleReader() {
 
   initArticleOutline();
   initArticleSidebarLayout();
+  initArticleFooterClearance();
 
   window.addEventListener('site:language-change', () => {
     document.querySelectorAll<HTMLButtonElement>('.code-block-toggle').forEach(button => {
@@ -158,6 +158,7 @@ function initArticleOutline() {
   const setBranchExpanded = (item: HTMLLIElement, expanded: boolean) => {
     const button = item.querySelector<HTMLButtonElement>(':scope > .article-toc-branch');
     if (!button) return;
+    if (button.getAttribute('aria-expanded') === String(expanded)) return;
     item.classList.toggle('is-collapsed', !expanded);
     button.setAttribute('aria-expanded', String(expanded));
     button.textContent = expanded ? '−' : '+';
@@ -228,7 +229,14 @@ function initArticleFooterClearance() {
 
   if (!footer) return;
 
+  const actions = document.querySelector<HTMLElement>('[data-article-mobile-actions]');
+
+  let frame = 0;
+
+  let previousClearance = 0;
+
   const update = () => {
+    frame = 0;
     const viewport = window.visualViewport;
 
     const viewportHeight = viewport?.height ?? window.innerHeight;
@@ -236,8 +244,6 @@ function initArticleFooterClearance() {
     const viewportBottom = (viewport?.offsetTop ?? 0) + viewportHeight;
 
     const footerBounds = footer.getBoundingClientRect();
-
-    const actions = document.querySelector<HTMLElement>('[data-article-mobile-actions]');
 
     const actionsHeight = actions?.getBoundingClientRect().height ?? 0;
 
@@ -248,19 +254,27 @@ function initArticleFooterClearance() {
 
     const clearance = Math.max(0, window.innerHeight - viewportBottom) + footerLift;
 
-    document.body.style.setProperty('--article-footer-clearance', `${clearance}px`);
+    if (clearance !== previousClearance) {
+      document.body.style.setProperty('--article-footer-clearance', `${clearance}px`);
+      previousClearance = clearance;
+    }
+  };
+
+  const scheduleUpdate = () => {
+    if (!frame) frame = requestAnimationFrame(update);
   };
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  window.visualViewport?.addEventListener('scroll', update, { passive: true });
-  window.visualViewport?.addEventListener('resize', update);
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.visualViewport?.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.visualViewport?.addEventListener('resize', scheduleUpdate);
 
-  const observer = new ResizeObserver(update);
+  const observer = new ResizeObserver(scheduleUpdate);
 
   observer.observe(document.body);
   observer.observe(footer);
+  if (actions) observer.observe(actions);
 }
 
 /** Adds the shared mobile drawer behavior to every article navigation sidebar. */

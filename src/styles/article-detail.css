@@ -49,7 +49,7 @@ html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body figcaption { color: var(--muted); font-size: 14px; margin-top: -18px; text-align: center; }
 .article-body :not(pre) > code { background: var(--code-bg); border: 1px solid var(--code-line); border-radius: 3px; color: var(--code-ink); font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: .88em; font-weight: 600; padding: .12em .35em; white-space: normal; }
 .article-body .code-block-shell { margin: 26px 0 30px; position: relative; }
-.article-body pre.astro-code { background: var(--code-bg) !important; border: 1px solid var(--code-line); border-left: 4px solid var(--pink); border-radius: 4px; box-shadow: 6px 6px 0 var(--shadow); color: var(--code-ink) !important; font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.75; margin: 0; overflow-x: auto; padding: 48px 24px 20px; position: relative; tab-size: 4; transition: max-height .25s ease, padding-bottom .25s ease; }
+.article-body pre.astro-code { background: var(--code-bg) !important; border: 1px solid var(--code-line); border-left: 4px solid var(--pink); border-radius: 4px; box-shadow: 6px 6px 0 var(--shadow); color: var(--code-ink) !important; font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.75; margin: 0; overflow-x: auto; padding: 48px 24px 20px; position: relative; tab-size: 4; }
 .code-block-language { color: var(--muted); font-family: Consolas, 'Cascadia Mono', 'Courier New', monospace; font-size: 12px; font-weight: 700; left: 20px; line-height: 1; position: absolute; text-transform: lowercase; top: 17px; z-index: 1; }
 .code-block-toggle { background: none; border: 0; color: var(--muted); cursor: pointer; font-family: 'Noto Sans SC', Arial, sans-serif; font-size: 13px; font-weight: 700; line-height: 1; padding: 5px; position: absolute; right: 12px; top: 13px; z-index: 1; }
 .code-block-toggle:hover { color: var(--pink); }
@@ -59,7 +59,7 @@ html[lang="en"] .blog-post h1 { letter-spacing: -1px; line-height: 1.2; }
 .article-body pre.astro-code code { display: block; font-family: inherit; min-width: max-content; }
 .article-body pre.astro-code .line { min-height: 1.75em; }
 .article-body pre.astro-code span[style*='--shiki-light'] { color: var(--shiki-light) !important; }
-.back-to-top { background: var(--lime); border: 2px solid var(--ink); bottom: calc(28px + var(--article-footer-clearance, 0px)); box-shadow: 4px 4px 0 var(--pink); color: var(--media); cursor: pointer; font-family: 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 900; letter-spacing: .8px; padding: 12px 10px; position: fixed; right: 28px; transform: rotate(-4deg); transition: background .2s, box-shadow .2s, transform .2s; z-index: 2; }
+.back-to-top { background: var(--lime); border: 2px solid var(--ink); bottom: calc(28px + var(--article-footer-clearance, 0px)); box-shadow: 4px 4px 0 var(--pink); color: var(--media); cursor: pointer; font-family: 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 900; letter-spacing: .8px; padding: 12px 10px; position: fixed; right: 28px; transform: rotate(-4deg); z-index: 2; }
 .back-to-top:hover { background: var(--pink); box-shadow: 2px 2px 0 var(--ink); transform: rotate(0) translate(-2px, -2px); }
 @media (max-width: 1500px) { .article-decor { display: none; } }
 @media (max-width: 720px) {

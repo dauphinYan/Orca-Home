@@ -33,6 +33,11 @@ const translations = await getPageTranslations(Astro.url.pathname);
 
   button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
 
+  @media (prefers-reduced-motion: no-preference) {
+    button { transition: scale var(--motion-fast) var(--motion-ease); }
+    button:active { scale: .92; }
+  }
+
   @media (max-width: 840px) {
     :global(.nav-inner:has([data-language-switch])) { justify-content: flex-end; gap: 0; }
 

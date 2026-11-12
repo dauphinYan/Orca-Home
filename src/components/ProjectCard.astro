@@ -13,7 +13,7 @@ const dialogId = `project-${project.key}`;
     <h3 class="project-title">{project.title}</h3>
     <span class="round-arrow" aria-hidden="true"><Icon name="arrow" /></span>
   </Tag>
-  {!project.href && <dialog id={dialogId} class="project-dialog" aria-labelledby={`${dialogId}-title`} aria-describedby={`${dialogId}-description`}>
+  {!project.href && <dialog id={dialogId} class="project-dialog" data-motion-dialog aria-labelledby={`${dialogId}-title`} aria-describedby={`${dialogId}-description`}>
     <button class="close-dialog" type="button" aria-label="关闭详情" autofocus>×</button>
     <h2 id={`${dialogId}-title`}>{project.title}</h2>
     <p id={`${dialogId}-description`}>{project.description}</p>

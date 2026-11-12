@@ -45,11 +45,22 @@ export function initMediaViewer() {
 
   let previousOverflow = '';
 
+  let updateFrame = 0;
+
   const update = () => {
     content.style.transform = `translate(${offset.x}px, ${offset.y}px) scale(${scale})`;
-    scaleOutput.value = `${Math.round(scale * 100)}%`;
+    const percentage = `${Math.round(scale * 100)}%`;
+    if (scaleOutput.value !== percentage) scaleOutput.value = percentage;
     zoomOutButton.disabled = scale <= 0.25;
     zoomInButton.disabled = scale >= 8;
+  };
+
+  const scheduleUpdate = () => {
+    if (updateFrame) return;
+    updateFrame = requestAnimationFrame(() => {
+      updateFrame = 0;
+      update();
+    });
   };
 
   const reset = () => {
@@ -69,7 +80,7 @@ export function initMediaViewer() {
 
     offset = { x: x - (x - offset.x) * ratio, y: y - (y - offset.y) * ratio };
     scale = next;
-    update();
+    scheduleUpdate();
   };
 
   const open = (element: HTMLElement) => {
@@ -231,7 +242,7 @@ export function initMediaViewer() {
       offset.y += nextCenter.y - center.y;
     }
 
-    update();
+    scheduleUpdate();
   });
 
   const endPointer = (event: PointerEvent) => {
@@ -262,12 +273,17 @@ export function initMediaViewer() {
   stage.addEventListener('lostpointercapture', endPointer);
 
   stage.addEventListener('dblclick', reset);
-  window.addEventListener('resize', reset);
+  window.addEventListener('resize', () => {
+    if (dialog.open) reset();
+  });
   dialog.addEventListener('click', event => {
     if (event.target === dialog) dialog.close();
   });
 
   dialog.addEventListener('close', () => {
+    cancelAnimationFrame(updateFrame);
+    updateFrame = 0;
+
     for (const id of pointers.keys()) {
       if (stage.hasPointerCapture(id)) stage.releasePointerCapture(id);
     }

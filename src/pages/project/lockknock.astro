@@ -34,7 +34,7 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
       <section class="game-hero" aria-labelledby="game-title">
         <img class="hero-cover" src={cover} alt="提灯的角色站在门口，身后暗处浮现触手" fetchpriority="high" />
         <div class="hero-shade"></div>
-        <div class="game-hero-content">
+        <div class="game-hero-content" data-motion-intro>
           <p class="eyebrow">AN INDIE GAME BY ORCA</p>
           <h1 id="game-title"><img src={title} alt="洛克的迷宫 · Lock Knock" /></h1>
           <p class="hero-quote">门后，是未知。<br />而你，必须向前。</p>
@@ -59,8 +59,7 @@ const promotionalVideo = 'https://www.bilibili.com/video/BV1SwGN68EPs';
       document.querySelectorAll<HTMLButtonElement>('[data-gallery-direction]').forEach(button => {
         button.addEventListener('click', () => {
           const direction = Number(button.dataset.galleryDirection);
-          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          galleryTrack.scrollBy({ left: direction * galleryTrack.clientWidth * 0.85, behavior: reducedMotion ? 'auto' : 'smooth' });
+          galleryTrack.scrollBy({ left: direction * galleryTrack.clientWidth * 0.85 });
         });
       });
     </script>

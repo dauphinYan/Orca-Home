@@ -1,0 +1,37 @@
+:root {
+  --motion-fast: 140ms;
+  --motion-standard: 220ms;
+  --motion-entrance: 360ms;
+  --motion-ease: cubic-bezier(.2, .75, .25, 1);
+}
+
+@keyframes motion-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes motion-rise-in {
+  from { translate: 0 var(--motion-rise, 8px); }
+}
+
+@keyframes motion-dialog-in {
+  from { opacity: .5; translate: 0 8px; scale: .985; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion-intro] {
+    animation: motion-rise-in var(--motion-entrance) var(--motion-ease);
+  }
+
+  [data-motion-dialog][open] {
+    animation: motion-dialog-in var(--motion-standard) var(--motion-ease);
+  }
+
+  [data-motion-dialog][open]::backdrop {
+    animation: motion-fade-in var(--motion-standard) ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { transition: none !important; }
+}

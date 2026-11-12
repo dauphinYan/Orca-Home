@@ -14,6 +14,12 @@
 .source-card h3, .source-card .article-card-label { overflow-wrap: anywhere; }
 .source-card .article-card-meta { margin-top: auto; padding-top: 26px; }
 .source-reading-page [hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .source-topics button, [data-source-reset] { transition: scale var(--motion-fast) var(--motion-ease); }
+  .source-topics button:active, [data-source-reset]:active { scale: .97; }
+}
+
 @media (max-width: 720px) {
   .source-reading-page .article-hero h1 { font-size: clamp(30px, 7.5vw, 46px); letter-spacing: -1px; }
   .source-card .article-card-meta { align-items: flex-start; flex-direction: row; }

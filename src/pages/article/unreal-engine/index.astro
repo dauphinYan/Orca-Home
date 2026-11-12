@@ -7,16 +7,15 @@ import '../../../styles/knowledge-index.css';
 import { getCollection } from 'astro:content';
 import KnowledgeTree from '../../../components/KnowledgeTree.astro';
 import ArticleSidebar from '../../../components/ArticleSidebar.astro';
-import { articleUrlSlug } from '../../../data/knowledge-section';
-import { buildUnrealDocsTree, unrealDocsHubPath } from '../../../data/unreal-docs';
+import { buildUnrealDocsArticles, buildUnrealDocsTree, unrealDocsHubPath } from '../../../data/unreal-docs';
 
-const cppArticles = (await getCollection('unrealCpp', ({ data }) => !data.draft))
-  .map(article => ({ ...article, href: `/article/unreal-engine/cpp/${articleUrlSlug(article.id)}/`, section: 'C++ 编程' }));
-const gameplayArticles = (await getCollection('gameplaySystems', ({ data }) => !data.draft))
-  .map(article => ({ ...article, href: `/article/unreal-engine/gameplay-systems/${articleUrlSlug(article.id)}/`, section: '游戏性系统' }));
-const articles = [...cppArticles, ...gameplayArticles]
+const [cppEntries, gameplayEntries] = await Promise.all([
+  getCollection('unrealCpp'),
+  getCollection('gameplaySystems'),
+]);
+const articles = buildUnrealDocsArticles(cppEntries, gameplayEntries)
   .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'zh-CN'));
-const navigationTree = buildUnrealDocsTree(await getCollection('unrealCpp'), await getCollection('gameplaySystems'));
+const navigationTree = buildUnrealDocsTree(cppEntries, gameplayEntries);
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -46,7 +45,7 @@ const navigationTree = buildUnrealDocsTree(await getCollection('unrealCpp'), awa
           <label class="knowledge-search"><span class="sr-only">搜索专区内容</span><input type="search" placeholder="搜索标题、摘要或正文术语…" data-knowledge-search /></label>
           <p class="knowledge-results" data-knowledge-results aria-live="polite">已收录 {articles.length} 篇导读</p>
           <div class="knowledge-cards" data-knowledge-cards>
-            {articles.map(article => <article class="knowledge-card" data-knowledge-card data-search={`${article.data.title} ${article.data.description} ${article.body}`}>
+            {articles.map(article => <article class="knowledge-card" data-knowledge-card={article.href} data-search={`${article.data.title} ${article.data.description}`}>
               <p>{article.section} · UE {article.data.engineVersion} · 已核对 {article.data.reviewedAt.toLocaleDateString('zh-CN')}</p>
               <h2 lang="zh-CN" data-i18n-ignore><a href={article.href}>{article.data.title}</a></h2>
               <p class="knowledge-card-description" lang="zh-CN" data-i18n-ignore>{article.data.description}</p>
@@ -64,19 +63,8 @@ const navigationTree = buildUnrealDocsTree(await getCollection('unrealCpp'), awa
       initKnowledgeTree();
     </script>
     <script>
-      const search = document.querySelector('[data-knowledge-search]');
-      const cards = [...document.querySelectorAll('[data-knowledge-card]')];
-      const result = document.querySelector('[data-knowledge-results]');
-      search?.addEventListener('input', () => {
-        const query = search instanceof HTMLInputElement ? search.value.trim().toLocaleLowerCase() : '';
-        let visible = 0;
-        cards.forEach(card => {
-          const matches = !query || (card.getAttribute('data-search') || '').toLocaleLowerCase().includes(query);
-          (card as HTMLElement).hidden = !matches;
-          if (matches) visible += 1;
-        });
-        if (result) result.textContent = query ? `找到 ${visible} 篇与“${query}”相关的导读` : `已收录 ${visible} 篇导读`;
-      });
+      import { initKnowledgeSearch } from '../../../scripts/knowledge-search';
+      initKnowledgeSearch();
     </script>
   </body>
 </html>

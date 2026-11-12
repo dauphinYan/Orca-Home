@@ -2,12 +2,27 @@ import type { Mermaid } from 'mermaid';
 import { enableMediaPreview } from './media-viewer';
 import { localize } from '../i18n/client';
 
-/** Loads Mermaid only when the article contains diagram fences. */
-export async function initArticleMermaid() {
+/** Starts diagram rendering when a diagram is close to the reader's viewport. */
+export function initArticleMermaid() {
   const blocks = [...document.querySelectorAll<HTMLElement>('.article-body pre > code.language-mermaid')];
 
   if (blocks.length === 0) return;
 
+  if (!('IntersectionObserver' in window)) {
+    void renderArticleDiagrams(blocks);
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    if (!entries.some(entry => entry.isIntersecting)) return;
+    observer.disconnect();
+    void renderArticleDiagrams(blocks);
+  }, { rootMargin: '600px 0px' });
+
+  blocks.forEach(code => observer.observe(code.parentElement!));
+}
+
+async function renderArticleDiagrams(blocks: HTMLElement[]) {
   let mermaid: Mermaid;
 
   try {

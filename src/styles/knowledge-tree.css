@@ -10,8 +10,12 @@
 .knowledge-folder-title:hover { color: var(--pink); }
 .knowledge-branch { align-items: center; background: var(--lime); border: 0; border-radius: 50%; color: var(--media); cursor: pointer; display: flex; flex: none; font-size: 15px; font-weight: 900; height: 22px; justify-content: center; line-height: 1; padding: 0; width: 22px; }
 .knowledge-branch:hover { background: var(--pink); color: var(--paper); }
-.knowledge-tree li.is-folder > ul { border-left: 1px solid var(--line-subtle); margin: 0 0 4px 11px; max-height: 1600px; opacity: 1; overflow: hidden; padding-left: 12px; transition: margin .24s ease, max-height .3s ease, opacity .18s ease; }
-.knowledge-tree li.is-folder.is-collapsed > ul { margin-bottom: 0; max-height: 0; opacity: 0; pointer-events: none; }
+.knowledge-tree li.is-folder > ul { border-left: 1px solid var(--line-subtle); margin: 0 0 4px 11px; padding-left: 12px; }
+.knowledge-tree li.is-collapsed > ul { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .knowledge-tree li[data-motion-branch] > ul { animation: motion-fade-in var(--motion-fast) ease-out; }
+}
 .knowledge-tree em { color: var(--muted); display: block; font-size: 11px; font-style: normal; font-weight: 400; margin-top: 4px; }
 .article-sidebar--knowledge .knowledge-tree a, .article-sidebar--knowledge .knowledge-tree span { font-size: 14px; }
 .article-sidebar--knowledge .knowledge-tree .is-current > a, .article-sidebar--knowledge .knowledge-tree .is-current > .knowledge-row > a { color: var(--pink); font-weight: 900; }

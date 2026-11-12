@@ -20,3 +20,10 @@
 .media-viewer-stage.is-dragging { cursor: grabbing; }
 .media-viewer-content { flex: none; display: flex; align-items: center; justify-content: center; background: #fff; color: #1f2937; border-radius: 4px; box-shadow: 0 8px 40px rgb(0 0 0 / 25%); transform-origin: center; }
 .media-viewer-content > img, .media-viewer-content > svg { display: block; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; object-fit: contain; flex-shrink: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .media-viewer[open]::backdrop { animation: motion-fade-in var(--motion-fast) ease-out; }
+  .media-viewer[open] .media-viewer-content { animation: motion-fade-in var(--motion-fast) ease-out; }
+  .media-viewer-close, .media-viewer-zoom button { transition: scale var(--motion-fast) var(--motion-ease); }
+  .media-viewer-close:active, .media-viewer-zoom button:active:not(:disabled) { scale: .92; }
+}
