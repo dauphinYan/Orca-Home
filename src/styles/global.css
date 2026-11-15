@@ -103,7 +103,8 @@ dialog h2{font-size:40px;margin:25px 0 10px}
 #dialog-tag{color:var(--pink);font-weight:700}
 #dialog-tech,.project-note{font-size:13px;color:var(--muted)}
 .project-note{border-top:1px solid var(--line);padding-top:18px;margin-top:30px}
-::selection{background:var(--lime);color:var(--media)}
+::selection{background:#dcd6cb;color:#302a22}
+@media(prefers-color-scheme:dark){::selection{background:#49443d;color:#f5efe6}}
 @media(min-width:1700px){.hero{height:440px}
 .content-row{padding-left:max(4%,calc((100vw - 1560px)/2));padding-right:max(4%,calc((100vw - 1560px)/2))}
 }
